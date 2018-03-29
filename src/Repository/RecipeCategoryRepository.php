@@ -36,15 +36,14 @@ class RecipeCategoryRepository extends ServiceEntityRepository
     }
     */
 
-    /*
-    public function findOneBySomeField($value): ?RecipeCategory
-    {
+
+    public function findOneBySlugOrAlternative($value): ?RecipeCategory {
         return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('r.slug = :slug')
+            ->orWhere('r.alternative LIKE :alt')
+            ->setParameter('slug', $value)
+            ->setParameter('alt', "%" . $value . "%")
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getOneOrNullResult();
     }
-    */
 }

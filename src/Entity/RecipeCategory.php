@@ -29,7 +29,7 @@ class RecipeCategory
     /**
      * @ORM\Column(type="boolean")
      */
-    private $status;
+    private $enabled;
 
     /**
      * @ORM\Column(type="string", length=500, nullable=true)
@@ -65,14 +65,14 @@ class RecipeCategory
         return $this;
     }
 
-    public function getStatus(): ?bool
+    public function getEnabled(): ?bool
     {
         return $this->status;
     }
 
-    public function setStatus(bool $status): self
+    public function setEnabled(bool $enabled): self
     {
-        $this->status = $status;
+        $this->enabled = $enabled;
 
         return $this;
     }

@@ -27,6 +27,31 @@ class Recipe
     private $permalink;
 
     /**
+     * @ORM\Column(type="string", length=16, nullable=true, unique=true)
+     */
+    private $image;
+
+    /**
+     * @ORM\Column(type="string", length=10, nullable=true)
+     */
+    private $imageOrientation;
+
+    /**
+     * Many Recipes have Many RecipeCategories.
+     * @ORM\ManyToMany(targetEntity="RecipeCategory")
+     * @ORM\JoinTable(name="recipes_recipe_categories",
+     *      joinColumns={@ORM\JoinColumn(name="recipe_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="recipe_catetory_id", referencedColumnName="id")}
+     *      )
+     */
+    private $categories;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $released;
@@ -37,24 +62,10 @@ class Recipe
     private $crawled;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\ManyToOne(targetEntity="Blog")
+     * @ORM\JoinColumn(name="blog_id", referencedColumnName="id")
      */
-    private $hasThumbnail;
-
-    /**
-     * @ORM\Column(type="string", length=20)
-     */
-    private $thumbnailOrientation;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $enabled;
-
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
-    private $edited;
+    private $blog;
 
     public function getId()
     {
@@ -85,6 +96,52 @@ class Recipe
         return $this;
     }
 
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(string $image = null): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageOrientation(): ?string
+    {
+        return $this->imageOrientation;
+    }
+
+    public function setImageOrientation(string $imageOrientation): self
+    {
+        $this->imageOrientation = $imageOrientation;
+
+        return $this;
+    }
+
+    public function getCategories(): ?Array {
+        return $this->categories;
+    }
+
+    public function setCategories(Array $categories): self {
+        $this->categories = $categories;
+
+        return $this;
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
     public function getReleased(): ?\DateTimeInterface
     {
         return $this->released;
@@ -105,54 +162,6 @@ class Recipe
     public function setCrawled(\DateTimeInterface $crawled): self
     {
         $this->crawled = $crawled;
-
-        return $this;
-    }
-
-    public function getHasThumbnail(): ?bool
-    {
-        return $this->hasThumbnail;
-    }
-
-    public function setHasThumbnail(bool $hasThumbnail): self
-    {
-        $this->hasThumbnail = $hasThumbnail;
-
-        return $this;
-    }
-
-    public function getThumbnailOrientation(): ?string
-    {
-        return $this->thumbnailOrientation;
-    }
-
-    public function setThumbnailOrientation(string $thumbnailOrientation): self
-    {
-        $this->thumbnailOrientation = $thumbnailOrientation;
-
-        return $this;
-    }
-
-    public function getEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function getEdited(): ?\DateTimeImmutable
-    {
-        return $this->edited;
-    }
-
-    public function setEdited(\DateTimeImmutable $edited): self
-    {
-        $this->edited = $edited;
 
         return $this;
     }

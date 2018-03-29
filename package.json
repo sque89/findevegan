@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "sass": "node-sass -w ./assets/sass/styles.scss -o ./assets/css/",
+    "sass": "node-sass -w ./assets/sass/styles.scss -o ./public/css/",
     "dev-server": "encore dev-server",
     "dev": "encore dev",
     "watch": "encore dev --watch",

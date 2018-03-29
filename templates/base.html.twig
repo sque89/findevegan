@@ -3,10 +3,62 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
+        {% block stylesheets %}
+            <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+        {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
-    </body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    {% block header %}
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                            <div class="container">
+                                <a class="navbar-brand" href="#">findevegan.de</a>
+                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav mr-auto">
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="#">Rezeptsuche <span class="sr-only">(aktuell)</span></a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Blogs</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Bücher</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Über</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">Kontakt</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-9">
+                                {% block body %}{% endblock %}
+                            </div>
+                        <div class="col-12 col-md-3">
+                            {% block sidebar %}
+                                sidebar
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% block javascripts %}{% endblock %}
+</body>
 </html>
