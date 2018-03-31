@@ -160,26 +160,4 @@ class Blog
 
         return $this;
     }
-
-    public function crawl(ORM\EntityManagerInterface $entityManager) {
-        set_time_limit(0);
-        $crawlService = new CrawlService();
-        $crawler = new Crawler(file_get_contents("http://der-veganizer.de/category/rezepte/feed/"));
-
-        $crawler->filter('item')->each(function(Crawler $itemNode) use ($crawlService, $entityManager) {
-            $imageResult = $crawlService->parseImage($itemNode->text());
-            $recipe = new Recipe();
-            $recipe->setTitle($itemNode->children()->filter('title')->first()->text());
-            $recipe->setPermalink($itemNode->children()->filter('link')->first()->text());
-            $recipe->setReleased($crawlService->parseReleaseDate($itemNode));
-            $recipe->setCategories($crawlService->parseRecipeCategories($this->getDoctrine()->getRepository(RecipeCategory::class), $itemNode->children()->filter('category')));
-            $recipe->setImage($imageResult["name"]);
-            $recipe->setImageOrientation($imageResult["orientation"]);
-            $recipe->setEnabled(true);
-            $recipe->setCrawled(new \DateTime("now"));
-
-            $entityManager->persist($recipe);
-            $entityManager->flush();
-        });
-    }
 }

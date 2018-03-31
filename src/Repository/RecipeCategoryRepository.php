@@ -39,10 +39,11 @@ class RecipeCategoryRepository extends ServiceEntityRepository
 
     public function findOneBySlugOrAlternative($value): ?RecipeCategory {
         return $this->createQueryBuilder('r')
-            ->andWhere('r.slug = :slug')
-            ->orWhere('r.alternative LIKE :alt')
+            ->addSelect('a')
+            ->join('r.alternatives', 'a')
+            ->andWhere('LOWER(r.slug) = :slug')
+            ->orWhere('LOWER(a.slug) = :slug')
             ->setParameter('slug', $value)
-            ->setParameter('alt', "%" . $value . "%")
             ->getQuery()
             ->getOneOrNullResult();
     }

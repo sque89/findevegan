@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Blog;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RecipeRepository")
@@ -22,7 +23,7 @@ class Recipe
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=500)
+     * @ORM\Column(type="string", length=190, unique=true)
      */
     private $permalink;
 
@@ -113,7 +114,7 @@ class Recipe
         return $this->imageOrientation;
     }
 
-    public function setImageOrientation(string $imageOrientation): self
+    public function setImageOrientation(string $imageOrientation = null): self
     {
         $this->imageOrientation = $imageOrientation;
 
@@ -162,6 +163,17 @@ class Recipe
     public function setCrawled(\DateTimeInterface $crawled): self
     {
         $this->crawled = $crawled;
+
+        return $this;
+    }
+
+    public function getBlog(): ?Blog {
+        return $this->blog;
+    }
+
+    public function setBlog(Blog $blog): self
+    {
+        $this->blog = $blog;
 
         return $this;
     }

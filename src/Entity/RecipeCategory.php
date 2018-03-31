@@ -32,9 +32,14 @@ class RecipeCategory
     private $enabled;
 
     /**
-     * @ORM\Column(type="string", length=500, nullable=true)
+     * One RecipeCategory has Many RecipeCategoryAlternatives.
+     * @ORM\OneToMany(targetEntity="RecipeCategoryAlternative", mappedBy="recipeCategory")
      */
-    private $alternative;
+    private $alternatives;
+
+    public function __construct() {
+        $this->alternatives = new ArrayCollection();
+    }
 
     public function getId()
     {
