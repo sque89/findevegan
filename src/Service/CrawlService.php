@@ -8,6 +8,7 @@ use App\Entity\Recipe;
 use claviska\SimpleImage;
 
 class CrawlService {
+
     private $IMAGE_PATTERN = "/https?:\/\/[^\/\s]+\/\S+\.(jpg|png)|https?:\/\/[^\/\s]+\/\S+\"/";
     private $INVALID_PATH_SEGMENTS = [
         "comment",
@@ -22,40 +23,59 @@ class CrawlService {
         "pixel",
         "banner"
     ];
-
     private $recipeCategoryRepository;
+
+    private function pathIsInvalidBecauseOfPathSegment($url) {
+        foreach ($this->INVALID_PATH_SEGMENTS as $segment) {
+            return stripos($url, $segment);
+        }
+        return false;
+    }
+
+    private function generateImageId($length = 16) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
+    private function categoryAlreadySetForRecipe($categoryToCheck, $alreadySetCategories) {
+        $alreadySet = false;
+        foreach($alreadySetCategories as $category) {
+            if ($categoryToCheck->getId() === $category->getId()) {
+                $alreadySet = true;
+            }
+        }
+        return $alreadySet;
+    }
 
     public function __construct(RecipeCategoryRepository $recipeCategoryRepository) {
         $this->recipeCategoryRepository = $recipeCategoryRepository;
     }
 
-    public function getLatestBlogRecipes($blog) {
-        set_time_limit(0);
-        $crawler = new Crawler(file_get_contents($blog->getFeed()));
-        $latestRecipes = [];
-        $crawler->filter('item')->each(function(Crawler $itemNode) use ($blog, &$latestRecipes) {
-            $imageResult = $this->parseImage($itemNode->text());
-            $recipe = new Recipe();
-            $recipe->setTitle($itemNode->children()->filter('title')->first()->text());
-            $recipe->setPermalink($itemNode->children()->filter('link')->first()->text());
-            $recipe->setReleased($this->parseReleaseDate($itemNode));
-            $recipe->setCategories($this->parseRecipeCategories($itemNode->children()->filter('category')));
-            $recipe->setImage($imageResult["name"]);
-            $recipe->setImageOrientation($imageResult["orientation"]);
-            $recipe->setEnabled(true);
-            $recipe->setCrawled(new \DateTime("now"));
-            $recipe->setBlog($blog);
-            $latestRecipes[] = $recipe;
-        });
-        return $latestRecipes;
+    public function fetchRecipe(Crawler $recipeNode, $blog) {
+        $imageResult = $this->parseImage($recipeNode->text());
+        $recipe = new Recipe();
+        $recipe->setTitle($recipeNode->children()->filter('title')->first()->text());
+        $recipe->setPermalink($recipeNode->children()->filter('link')->first()->text());
+        $recipe->setReleased($this->parseReleaseDate($recipeNode));
+        $recipe->setCategories($this->parseRecipeCategories($recipeNode->children()->filter('category')));
+        $recipe->setImage($imageResult["name"]);
+        $recipe->setImageOrientation($imageResult["orientation"]);
+        $recipe->setEnabled(true);
+        $recipe->setCrawled(new \DateTime("now"));
+        $recipe->setBlog($blog);
+        return $recipe;
     }
 
     public function parseRecipeCategories(Crawler $categoryNodes): Array {
         $recipeCategories = [];
         $categoryNodes->each(function(Crawler $categoryNode) use (&$recipeCategories) {
             $category = $this->recipeCategoryRepository->findOneBySlugOrAlternative(strtolower($categoryNode->text()));
-            if ($category) {
-                echo strtolower($categoryNode->text()) . "<br />";
+            if ($category && !$this->categoryAlreadySetForRecipe($category, $recipeCategories)) {
                 $recipeCategories[] = $category;
             }
         });
@@ -98,22 +118,4 @@ class CrawlService {
         }
         return $releasedDate;
     }
-
-    private function pathIsInvalidBecauseOfPathSegment($url) {
-        foreach ($this->INVALID_PATH_SEGMENTS as $segment) {
-            return stripos($url, $segment);
-        }
-        return false;
-    }
-
-    private function generateImageId($length = 16) {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-        return $randomString;
-    }
-
 }
