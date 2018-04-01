@@ -26,6 +26,10 @@ class CrawlService {
     ];
     private $recipeCategoryRepository;
 
+    public function __construct(RecipeCategoryRepository $recipeCategoryRepository) {
+        $this->recipeCategoryRepository = $recipeCategoryRepository;
+    }
+
     private function pathIsInvalidBecauseOfPathSegment($url) {
         foreach ($this->INVALID_PATH_SEGMENTS as $segment) {
             return stripos($url, $segment);
@@ -53,15 +57,24 @@ class CrawlService {
         return $alreadySet;
     }
 
-    public function __construct(RecipeCategoryRepository $recipeCategoryRepository) {
-        $this->recipeCategoryRepository = $recipeCategoryRepository;
+    private function checkAndStoreImage($path) {
+        $name = $this->generateImageId();
+        $image = new SimpleImage($path);
+        if ($image->getWidth() >= 400 || $image->getHeight() >= 400) {
+            $image->getOrientation() === 'landscape' ? $image->resize(400, null) : $image->resize(null, 400);
+            $image->toFile("images/" . $name . ".jpg", "image/jpeg", 80);
+            return [
+                "name" => $name,
+                "orientation" => $image->getOrientation()
+            ];
+        }
     }
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
         $imageResult = $this->parseImage($recipeNode->text());
         $recipe = new Recipe();
-        $recipe->setTitle($recipeNode->filter('title')->first()->text());
-        $recipe->setPermalink($recipeNode->filter('link')->first()->text());
+        $recipe->setTitle($this->parseTitle($recipeNode));
+        $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
         $recipe->setImage($imageResult["name"]);
@@ -83,26 +96,41 @@ class CrawlService {
         return $recipeCategories;
     }
 
+    public function parseTitle(Crawler $recipeNode) {
+        if ($recipeNode->filter('title')->count() > 0) {
+            return $recipeNode->filter('title')->first()->text();
+        } else if ($recipeNode->filterXPath('//default:title')->count() > 0) {
+            return $recipeNode->filterXPath('//default:title')->first()->text();
+        }
+    }
+
+    public function parsePermalink(Crawler $recipeNode) {
+        if ($recipeNode->filter('link')->count() > 0) {
+            return $recipeNode->filter('link')->first()->text();
+        } else if ($recipeNode->filterXPath("//default:link")->count() == 1) {
+            var_dump($recipeNode->filterXPath("//default:link")->first()->text());
+            return $recipeNode->filterXPath("//default:link")->first()->text();
+        } else if ($recipeNode->filterXPath("//default:link")->count() > 1 && $recipeNode->filterXPath("//default:link[@rel='alternate']")->count() == 1) {
+            echo $recipeNode->filterXPath("//default:link[@rel='alternate']")->first()->text();
+            return $recipeNode->filterXPath("//default:link[@rel='alternate']")->first()->attr("href");
+        }
+        return null;
+    }
+
     public function parseImage(string $nodeContent) {
         $matches = [];
         preg_match_all($this->IMAGE_PATTERN, $nodeContent, $matches);
 
-        $image = null;
-        $name = $this->generateImageId();
         foreach ($matches[0] as $match) {
             if (!$this->pathIsInvalidBecauseOfPathSegment($match)) {
                 try {
-                    $image = new SimpleImage($match);
-                    if ($image->getWidth() >= 400 || $image->getHeight() >= 400) {
-                        $image->getOrientation() === 'landscape' ? $image->resize(400, null) : $image->resize(null, 400);
-                        $image->toFile("images/" . $name . ".jpg", "image/jpeg", 80);
-                        return [
-                            "name" => $name,
-                            "orientation" => $image->getOrientation()
-                        ];
-                    }
+                    return $this->checkAndStoreImage($match);
                 } catch (\Exception $e) {
-                    continue;
+                    try {
+                        return $this->checkAndStoreImage(str_replace("https", "http", $match));
+                    } catch (\Exception $ex) {
+                        continue;
+                    }
                 }
             }
         }
@@ -116,6 +144,10 @@ class CrawlService {
             $releasedDate = new \DateTime($itemNode->filter("published")->first()->text());
         } else if ($itemNode->filter("pubDate")->count() >= 1) {
             $releasedDate = new \DateTime($itemNode->filter("pubDate")->first()->text());
+        } else if ($itemNode->filterXPath("//default:published")->count() >= 1) {
+            $releasedDate = new \DateTime($itemNode->filterXPath("//default:published")->first()->text());
+        } else if ($itemNode->filterXPath("//default:pubDate")->count() >= 1) {
+            $releasedDate = new \DateTime($itemNode->filterXPath("//default:pubDate")->first()->text());
         }
         return $releasedDate;
     }
