@@ -5,6 +5,7 @@ namespace App\Service;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Repository\RecipeCategoryRepository;
 use App\Entity\Recipe;
+use App\Entity\Blog;
 use claviska\SimpleImage;
 
 class CrawlService {
@@ -44,7 +45,7 @@ class CrawlService {
 
     private function categoryAlreadySetForRecipe($categoryToCheck, $alreadySetCategories) {
         $alreadySet = false;
-        foreach($alreadySetCategories as $category) {
+        foreach ($alreadySetCategories as $category) {
             if ($categoryToCheck->getId() === $category->getId()) {
                 $alreadySet = true;
             }
@@ -56,13 +57,13 @@ class CrawlService {
         $this->recipeCategoryRepository = $recipeCategoryRepository;
     }
 
-    public function fetchRecipe(Crawler $recipeNode, $blog) {
+    public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
         $imageResult = $this->parseImage($recipeNode->text());
         $recipe = new Recipe();
-        $recipe->setTitle($recipeNode->children()->filter('title')->first()->text());
-        $recipe->setPermalink($recipeNode->children()->filter('link')->first()->text());
+        $recipe->setTitle($recipeNode->filter('title')->first()->text());
+        $recipe->setPermalink($recipeNode->filter('link')->first()->text());
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
-        $recipe->setCategories($this->parseRecipeCategories($recipeNode->children()->filter('category')));
+        $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
         $recipe->setImage($imageResult["name"]);
         $recipe->setImageOrientation($imageResult["orientation"]);
         $recipe->setEnabled(true);
@@ -118,4 +119,5 @@ class CrawlService {
         }
         return $releasedDate;
     }
+
 }
