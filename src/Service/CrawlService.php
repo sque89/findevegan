@@ -140,10 +140,10 @@ class CrawlService {
 
     public function parseReleaseDate(Crawler $itemNode): \DateTime {
         $releasedDate = null;
-        if ($itemNode->filter("published")->count() >= 1) {
-            $releasedDate = new \DateTime($itemNode->filter("published")->first()->text());
-        } else if ($itemNode->filter("pubDate")->count() >= 1) {
-            $releasedDate = new \DateTime($itemNode->filter("pubDate")->first()->text());
+        if ($itemNode->filterXPath("//published")->count() >= 1) {
+            $releasedDate = new \DateTime($itemNode->filter("//published")->first()->text());
+        } else if ($itemNode->filterXPath("//pubDate")->count() >= 1) {
+            $releasedDate = new \DateTime($itemNode->filterXPath("//pubDate")->first()->text());
         } else if ($itemNode->filterXPath("//default:published")->count() >= 1) {
             $releasedDate = new \DateTime($itemNode->filterXPath("//default:published")->first()->text());
         } else if ($itemNode->filterXPath("//default:pubDate")->count() >= 1) {

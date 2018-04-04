@@ -18,22 +18,23 @@ class RecipeRepository extends ServiceEntityRepository {
         parent::__construct($registry, Recipe::class);
     }
 
-//    /**
-//     * @return Recipe[] Returns an array of Recipe objects
-//     */
-    /*
-      public function findByExampleField($value)
-      {
-      return $this->createQueryBuilder('r')
-      ->andWhere('r.exampleField = :val')
-      ->setParameter('val', $value)
-      ->orderBy('r.id', 'ASC')
-      ->setMaxResults(10)
-      ->getQuery()
-      ->getResult()
-      ;
-      }
-     */
+    public function findLatest() {
+        return $this->createQueryBuilder('r')
+                        ->where('r.enabled = true')
+                        ->setMaxResults(20)
+                        ->getQuery()
+                        ->getResult();
+    }
+
+    public function findByBlogSlug($slug) {
+        return $this->createQueryBuilder('r')
+                        ->join('r.blog', 'b')
+                        ->where('b.slug = :slug')
+                        ->setMaxResults(20)
+                        ->setParameter(':slug', $slug)
+                        ->getQuery()
+                        ->getResult();
+    }
 
     public function findOneByPermalink($permalink): ?Recipe {
         return $this->createQueryBuilder('r')

@@ -121,7 +121,7 @@ class Recipe
         return $this;
     }
 
-    public function getCategories(): ?Array {
+    public function getCategories() {
         return $this->categories;
     }
 

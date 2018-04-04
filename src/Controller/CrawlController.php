@@ -33,15 +33,14 @@ class CrawlController extends AbstractController {
         $blog = $blogRepository->find($id);
 
         if ($blog->getType() === "wordpress") {
-            $stop = false;
             $currentPage = 1;
 
             try {
                 $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
-                while ($pageCrawler->filter('item')->count() > 0 && !$stop) {
+                while ($pageCrawler->filter('item')->count() > 0) {
                     // Nicht abbrechbare each schleife keine option, da dann blogspot immer komplett gecrawlt wird
-                    $pageCrawler->filter('item')->each(function(Crawler $recipeNode) use ($request, $blog, $crawlService, $entityManager, $recipeRepository, &$stop) {
-                        $newRecipe = $crawlService->fetchRecipe($recipeNode, $blog);
+                    foreach ($pageCrawler->filter('item') as $recipeNode) {
+                        $newRecipe = $crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                         $alreadyExistingRecipe = $recipeRepository->findOneByPermalink($newRecipe->getPermalink());
                         if ($alreadyExistingRecipe) {
                             // Wenn alle Rezpete erneut gecrawlt werden sollen
@@ -56,13 +55,13 @@ class CrawlController extends AbstractController {
                                     unlink('images/' . $newRecipe->getImage() . ".jpg");
                                 }
                                 echo "vorhandenes rezept erreicht. blog wieder aktuell";
-                                $stop = true;
+                                break 2;
                             }
                         } else {
                             $entityManager->persist($newRecipe);
                         }
                         $entityManager->flush();
-                    });
+                    }
                     $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?paged=' . ++$currentPage));
                 }
             } catch (\Exception $exception) {
@@ -83,8 +82,8 @@ class CrawlController extends AbstractController {
                     $recipeItems = $pageCrawler->filterXPath('//default:entry');
                 }
 
-                $recipeItems->each(function(Crawler $recipeNode) use ($request, $blog, $crawlService, $entityManager, $recipeRepository) {
-                    $newRecipe = $crawlService->fetchRecipe($recipeNode, $blog);
+                foreach ($pageCrawler->filter('item') as $recipeNode) {
+                    $newRecipe = $crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                     $alreadyExistingRecipe = $recipeRepository->findOneByPermalink($newRecipe->getPermalink());
                     if ($alreadyExistingRecipe) {
                         // Wenn alle Rezpete erneut gecrawlt werden sollen
@@ -99,13 +98,13 @@ class CrawlController extends AbstractController {
                                 unlink('images/' . $newRecipe->getImage() . ".jpg");
                             }
                             echo "vorhandenes rezept erreicht. blog wieder aktuell";
-                            $stop = true;
+                            break;
                         }
                     } else {
                         $entityManager->persist($newRecipe);
                     }
                     $entityManager->flush();
-                });
+                }
             } catch (Exception $exception) {
                 echo "Blog nicht gefunden oder Ende erreicht";
             }
