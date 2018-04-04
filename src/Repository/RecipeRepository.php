@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @method Recipe|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,12 +20,13 @@ class RecipeRepository extends ServiceEntityRepository {
         parent::__construct($registry, Recipe::class);
     }
 
-    public function findLatest() {
-        return $this->createQueryBuilder('r')
-                        ->where('r.enabled = true')
-                        ->setMaxResults(20)
-                        ->getQuery()
-                        ->getResult();
+    public function findLatest($page) {
+        $queryBuilder = $this->createQueryBuilder('r')->where('r.enabled = true');
+        $adapter = new DoctrineORMAdapter($queryBuilder);
+        $paginator = new Pagerfanta($adapter);
+        $paginator->setMaxPerPage(40);
+        $paginator->setCurrentPage($page);
+        return $paginator;
     }
 
     public function findByBlogSlug($slug) {
