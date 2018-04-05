@@ -60,25 +60,20 @@ class CrawlService {
     private function checkAndStoreImage($path) {
         $name = $this->generateImageId();
         $image = new SimpleImage($path);
-        if ($image->getWidth() >= 400 || $image->getHeight() >= 400) {
-            $image->getOrientation() === 'landscape' ? $image->resize(400, null) : $image->resize(null, 400);
+        if ($image->getWidth() >= 400) {
+            $image->thumbnail(400, 320);
             $image->toFile("images/" . $name . ".jpg", "image/jpeg", 80);
-            return [
-                "name" => $name,
-                "orientation" => $image->getOrientation()
-            ];
+            return $name;
         }
     }
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
-        $imageResult = $this->parseImage($recipeNode->text());
         $recipe = new Recipe();
         $recipe->setTitle($this->parseTitle($recipeNode));
         $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
-        $recipe->setImage($imageResult["name"]);
-        $recipe->setImageOrientation($imageResult["orientation"]);
+        $recipe->setImage($this->parseImage($recipeNode->text()));
         $recipe->setEnabled(true);
         $recipe->setCrawled(new \DateTime("now"));
         $recipe->setBlog($blog);

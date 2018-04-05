@@ -33,11 +33,6 @@ class Recipe
     private $image;
 
     /**
-     * @ORM\Column(type="string", length=10, nullable=true)
-     */
-    private $imageOrientation;
-
-    /**
      * Many Recipes have Many RecipeCategories.
      * @ORM\ManyToMany(targetEntity="RecipeCategory")
      * @ORM\JoinTable(name="recipes_recipe_categories",
@@ -105,18 +100,6 @@ class Recipe
     public function setImage(string $image = null): self
     {
         $this->image = $image;
-
-        return $this;
-    }
-
-    public function getImageOrientation(): ?string
-    {
-        return $this->imageOrientation;
-    }
-
-    public function setImageOrientation(string $imageOrientation = null): self
-    {
-        $this->imageOrientation = $imageOrientation;
 
         return $this;
     }

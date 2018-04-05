@@ -9,9 +9,11 @@
     </head>
     <body>
         {% block header %}
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <nav class="navbar navbar-expand-lg bg-secondary">
                 <div class="container">
-                    <a class="navbar-brand" href="#">findevegan.de</a>
+                    <a class="navbar-brand" href="#">
+                        <img src="/images/misc/banner.png" class="d-inline-block align-top" alt="findevegan.de">
+                    </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -39,16 +41,21 @@
         {% endblock %}
         <div class="container">
             <div class="row">
-                <div class="col-12 col-md-9">
-                    {% block body %}{% endblock %}
-                </div>
-                <div class="col-12 col-md-3">
-                    {% block sidebar %}
-                        sidebar
-                    {% endblock %}
-                </div>
+                <div class="col-12">
+                {% block body %}{% endblock %}
             </div>
         </div>
-        {% block javascripts %}{% endblock %}
-    </body>
+    </div>
+    <footer class="bg-secondary">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-3">facebook</div>
+                <div class="col-12 col-md-3">tag cloud</div>
+                <div class="col-12 col-md-3">beste blogs</div>
+                <div class="col-12 col-md-3">weblinks</div>
+            </div>
+        </div>
+    </footer>
+{% block javascripts %}{% endblock %}
+</body>
 </html>

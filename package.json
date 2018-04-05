@@ -1,6 +1,9 @@
 {
   "devDependencies": {
-    "@symfony/webpack-encore": "^0.17.0"
+    "@symfony/webpack-encore": "^0.17.0",
+    "gulp": "^3.9.1",
+    "gulp-flatten": "^0.4.0",
+    "gulp-rename": "^1.2.2"
   },
   "license": "MIT",
   "private": true,

@@ -17,14 +17,21 @@
         <div class="row">
             <div class="col-12">
                 <div class="pagerfanta">
-                    {{ pagerfanta(recipes, 'twitter_bootstrap4', {'omitFirstPage': true}) }}
+                    {{
+                        pagerfanta(recipes, 'twitter_bootstrap4', {
+                            'omitFirstPage': true,
+                            'css_container_class': 'pagination justify-content-center',
+                            'prev_message': '&larr; <span class="d-none d-md-inline">Vorherige</span>',
+                            'next_message': '<span class="d-none d-md-inline">Nächste</span> &rarr;',
+                        })
+                    }}
                 </div>
             </div>
         </div>
-        {% for recipeRow in recipes|batch(2) %}
+        {% for recipeRow in recipes|batch(4) %}
             <div class="card-deck">
                 {% for recipe in recipeRow %}
-                    <div class="card m-0 my-3 m-sm-3">
+                    <div class="card my-2">
                         <a href="{{recipe.permalink}}">
                             <img class="card-img-top" src="/images/{{recipe.image}}.jpg" alt="{{recipe.title}}">
                         </a>
@@ -35,12 +42,14 @@
                             <p class="card-text">
                                 von <a href="{{recipe.blog.url}}">{{recipe.blog.title}}</a>
                             </p>
-                            <p class="card-text">
-                                in
-                                {% for recipeCategory in recipe.categories %}
-                                    {% if loop.index > 1 %}, {% endif %}<a href="/kategorie/{{recipeCategory.slug}}">{{recipeCategory.title}}</a>
-                                {% endfor %}
-                            </p>
+                            {% if (recipe.categories|length > 0) %}
+                                <p class="card-text">
+                                    in
+                                    {% for recipeCategory in recipe.categories %}
+                                        {% if loop.index > 1 %}, {% endif %}<a href="/kategorie/{{recipeCategory.slug}}">{{recipeCategory.title}}</a>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
                         </div>
                         <div class="card-footer">
                             <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
@@ -52,7 +61,14 @@
         <div class="row">
             <div class="col-12">
                 <div class="pagerfanta">
-                    {{ pagerfanta(recipes, 'twitter_bootstrap4', {'omitFirstPage': true}) }}
+                    {{
+                        pagerfanta(recipes, 'twitter_bootstrap4', {
+                            'omitFirstPage': true,
+                            'css_container_class': 'pagination justify-content-center',
+                            'prev_message': '&larr; <span class="d-none d-md-inline">Vorherige</span>',
+                            'next_message': '<span class="d-none d-md-inline">Nächste</span> &rarr;',
+                        })
+                    }}
                 </div>
             </div>
         </div>
