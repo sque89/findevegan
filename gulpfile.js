@@ -5,4 +5,9 @@ gulp.task('copyImages', function() {
         .pipe(gulp.dest('public/images/misc'));
 });
 
-gulp.task('default', ['copyImages']);
+gulp.task('copyIconFont', function() {
+    return gulp.src('assets/icons/iconic/font/fonts/open-iconic.woff')
+        .pipe(gulp.dest('./public/fonts'));
+});
+
+gulp.task('default', ['copyImages', 'copyIconFont']);

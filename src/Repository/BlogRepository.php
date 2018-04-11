@@ -47,4 +47,12 @@ class BlogRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findNumberOfBlogs() {
+        return $this->createQueryBuilder('b')
+            ->select('count(b.id)')
+            ->where('b.enabled = true')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

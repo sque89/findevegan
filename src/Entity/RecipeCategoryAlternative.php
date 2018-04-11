@@ -23,7 +23,7 @@ class RecipeCategoryAlternative
 
     /**
      * Many RecipeCategoryAlternatives have One RecipeCategory.
-     * @ORM\ManyToOne(targetEntity="RecipeCategory", inversedBy="recipeCategoryAlternatives")
+     * @ORM\ManyToOne(targetEntity="RecipeCategory", inversedBy="alternatives")
      * @ORM\JoinColumn(name="recipe_category_id", referencedColumnName="id")
      */
     private $recipeCategory;
@@ -40,5 +40,9 @@ class RecipeCategoryAlternative
     public function setSlug(string $slug): self {
         $this->slug = $slug;
         return $this;
+    }
+
+    public function getRecipeCategory(): ?RecipeCategory {
+        return $this->recipeCategory;
     }
 }

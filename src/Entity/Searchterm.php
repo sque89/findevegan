@@ -17,7 +17,7 @@ class Searchterm
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100, unique=true)
      */
     private $term;
 
@@ -30,6 +30,11 @@ class Searchterm
      * @ORM\Column(type="datetime_immutable")
      */
     private $latestSearch;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $count;
 
     public function getId()
     {
@@ -68,6 +73,16 @@ class Searchterm
     public function setLatestSearch(\DateTimeImmutable $latestSearch): self
     {
         $this->latestSearch = $latestSearch;
+
+        return $this;
+    }
+
+    public function getCount() {
+        return $this->count;
+    }
+
+    public function setCount($count) : self {
+        $this->count = $count;
 
         return $this;
     }

@@ -1,5 +1,15 @@
+/* Utility */
+@import "mixins";
+
+/* Bootstrap */
 @import "override_bootstrap";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
-@import "mixins";
 @import "custom_bootstrap";
+
+/* Icons */
+@import "../icons/iconic/font/css/open-iconic-bootstrap.scss";
+
+/* Content */
 @import "header";
+@import "sidebar";
+@import "footer";

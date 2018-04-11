@@ -13,7 +13,7 @@
         }
 
         @include media-breakpoint-up(xl) {
-            @include card-deck-column-count(4);
+            @include card-deck-column-count(2);
         }
     }
 }

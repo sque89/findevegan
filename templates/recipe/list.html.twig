@@ -6,29 +6,33 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <div class="input-group input-group-lg">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-lg">Large</span>
+                <form method="GET" class="w-100">
+                    <div class="input-group input-group-lg mt-5 mb-5">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="inputGroup-sizing-lg">
+                                <span class="oi oi-magnifying-glass"></span>
+                            </span>
+                        </div>
+                        <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}">
                     </div>
-                    <input type="text" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm">
-                </div>
+                </form>
             </div>
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="pagerfanta">
+                <div class="pagerfanta mb-4">
                     {{
                         pagerfanta(recipes, 'twitter_bootstrap4', {
                             'omitFirstPage': true,
                             'css_container_class': 'pagination justify-content-center',
-                            'prev_message': '&larr; <span class="d-none d-md-inline">Vorherige</span>',
-                            'next_message': '<span class="d-none d-md-inline">Nächste</span> &rarr;',
+                            'prev_message': '<span class="oi oi-chevron-left"></span>',
+                            'next_message': '<span class="oi oi-chevron-right"></span>',
                         })
                     }}
                 </div>
             </div>
         </div>
-        {% for recipeRow in recipes|batch(4) %}
+        {% for recipeRow in recipes|batch(2) %}
             <div class="card-deck">
                 {% for recipe in recipeRow %}
                     <div class="card my-2">
@@ -44,9 +48,8 @@
                             </p>
                             {% if (recipe.categories|length > 0) %}
                                 <p class="card-text">
-                                    in
                                     {% for recipeCategory in recipe.categories %}
-                                        {% if loop.index > 1 %}, {% endif %}<a href="/kategorie/{{recipeCategory.slug}}">{{recipeCategory.title}}</a>
+                                        // <a href="/kategorie/{{recipeCategory.slug}}">{{recipeCategory.title}}</a>
                                     {% endfor %}
                                 </p>
                             {% endif %}
@@ -60,13 +63,13 @@
         {% endfor %}
         <div class="row">
             <div class="col-12">
-                <div class="pagerfanta">
+                <div class="pagerfanta mt-4 mb-5">
                     {{
                         pagerfanta(recipes, 'twitter_bootstrap4', {
                             'omitFirstPage': true,
                             'css_container_class': 'pagination justify-content-center',
-                            'prev_message': '&larr; <span class="d-none d-md-inline">Vorherige</span>',
-                            'next_message': '<span class="d-none d-md-inline">Nächste</span> &rarr;',
+                            'prev_message': '<span class="oi oi-chevron-left"></span>',
+                            'next_message': '<span class="oi oi-chevron-right"></span>',
                         })
                     }}
                 </div>

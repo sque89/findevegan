@@ -19,32 +19,11 @@ class SearchtermRepository extends ServiceEntityRepository
         parent::__construct($registry, Searchterm::class);
     }
 
-//    /**
-//     * @return Searchterm[] Returns an array of Searchterm objects
-//     */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('s.id', 'ASC')
-            ->setMaxResults(10)
+    public function findByTerm($term) {
+        return $this->createQueryBuilder('t')
+            ->where('t.term = :term')
+            ->setParameter('term', $term)
             ->getQuery()
-            ->getResult()
-        ;
+            ->getOneOrNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Searchterm
-    {
-        return $this->createQueryBuilder('s')
-            ->andWhere('s.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
