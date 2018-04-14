@@ -16,7 +16,6 @@
                                 <a href="{{blog["blog"].url}}" target="_blank">{{blog["blog"].title}}</a>
                             </h5>
                             <p class="card-text">
-                                hat Rezepte in
                                 {% for usedCategory in blog["usedCategories"] %}
                                     // <a href="{{path('category', {'slug': usedCategory.slug})}}">{{usedCategory.title}}</a>
                                 {% endfor %}
