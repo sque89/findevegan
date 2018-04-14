@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello!{% endblock %}
+
+{% block body %}
+    <div class="container pt-5">
+        {% for blog in blogs %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            {{blog["blog"].enabledRecipes | length}} Rezepte verfügbar
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{blog["blog"].url}}" target="_blank">{{blog["blog"].title}}</a>
+                            </h5>
+                            <p class="card-text">
+                                hat Rezepte in
+                                {% for usedCategory in blog["usedCategories"] %}
+                                    // <a href="{{path('category', {'slug': usedCategory.slug})}}">{{usedCategory.title}}</a>
+                                {% endfor %}
+                            </p>
+                            <a href="{{path('blog', {'slug': blog["blog"].slug})}}" class="btn btn-primary" target="_blank">zu den Rezepten</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

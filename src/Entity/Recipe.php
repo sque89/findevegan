@@ -58,7 +58,8 @@ class Recipe
     private $crawled;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Blog")
+     * Many Recipes have one Blog
+     * @ORM\ManyToOne(targetEntity="Blog", inversedBy="recipes")
      * @ORM\JoinColumn(name="blog_id", referencedColumnName="id")
      */
     private $blog;

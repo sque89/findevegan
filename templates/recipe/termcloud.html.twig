@@ -1,0 +1,7 @@
+<ul class="list-inline">
+    {% for term in mostUsedTerms %}
+        <li class="list-inline-item level-{{term['level']}}">
+            <a href="{{path('latestWithTerm', {'term': term['term'].term})}}">{{term['term'].term}}</a>
+        </li>
+    {% endfor %}
+</ul>

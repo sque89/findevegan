@@ -19,40 +19,47 @@ class BlogRepository extends ServiceEntityRepository
         parent::__construct($registry, Blog::class);
     }
 
-//    /**
-//     * @return Blog[] Returns an array of Blog objects
-//     */
-    /*
-    public function findByExampleField($value)
-    {
+    private function getBasicQueryBuilder() {
         return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+                ->where('b.enabled = 1');
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Blog
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
+    public function findBlogsByFirstLetter(string $letter) {
+        $qb = $this->getBasicQueryBuilder();
+        return $qb->add('where', $qb->expr()->eq($qb->expr()->lower($qb->expr()->substring('b.title', 1, 1)), ':letter'))
+            ->setParameter('letter', $letter)
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
 
     public function findNumberOfBlogs() {
-        return $this->createQueryBuilder('b')
+        return $this->getBasicQueryBuilder()
             ->select('count(b.id)')
             ->where('b.enabled = true')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function findMostActiveBlogs() {
+        return $this->getBasicQueryBuilder()
+            ->join('b.recipes', 'r')
+            ->select('count(r.id) as count, b.title, b.slug')
+            ->where('DATE_DIFF(CURRENT_TIMESTAMP(), r.released) < 30')
+            ->groupBy('b.id')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findUsedCategoriesByBlogId($blogId) {
+        return $this->getBasicQueryBuilder()
+            ->select('c.title, c.slug')
+            ->join('b.recipes', 'r')
+            ->join('r.categories', 'c')
+            ->distinct('c.id')
+            ->where('b.id = :blogId')
+            ->setParameter('blogId', $blogId)
+            ->getQuery()
+            ->getResult();
     }
 }

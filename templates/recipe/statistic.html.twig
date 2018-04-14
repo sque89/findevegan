@@ -1,1 +1,4 @@
-<p>Durchsuche <span class="font-weight-bold text-primary">{{numberOfRecipes}} vegane Rezepte</span> von <span class="font-weight-bold text-primary">{{numberOfBlogs}} Blogs</span></p>
+<p>
+    Durchsuche <a href="{{path('latest')}}" class="font-weight-bold">{{numberOfRecipes}} vegane Rezepte</a>
+    von <a href="{{path('blogsStartWithLetter', {'firstLetter': 'a'})}}" class="font-weight-bold text-primary">{{numberOfBlogs}} Blogs</span>
+</p>

@@ -60,6 +60,12 @@ class Blog
      */
     private $enabled;
 
+    /**
+     * One Blog has Many Recipes.
+     * @ORM\OneToMany(targetEntity="Recipe", mappedBy="blog")
+     */
+    private $recipes;
+
     public function getId()
     {
         return $this->id;
@@ -158,6 +164,21 @@ class Blog
     {
         $this->enabled = $enabled;
 
+        return $this;
+    }
+
+    public function getRecipes() {
+        return $this->recipes;
+    }
+
+    public function getEnabledRecipes() {
+        return $this->getRecipes()->filter(function (Recipe $recipe) {
+            return $recipe->getEnabled();
+        });
+    }
+
+    public function setRecipes($recipes): self {
+        $this->recipes = $recipes;
         return $this;
     }
 }

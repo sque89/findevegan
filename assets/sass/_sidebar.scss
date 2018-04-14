@@ -9,4 +9,31 @@
             }
         }
     }
+
+    .termcloud {
+        .level-1 {
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .level-2 {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .level-3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .level-4 {
+            font-size: 1.6rem;
+            font-weight: 600;
+        }
+
+        .level-5 {
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+    }
 }

@@ -23,11 +23,13 @@ class RecipeController extends Controller {
         if ($alreadyExistingTerm) {
             $alreadyExistingTerm->setCount($alreadyExistingTerm->getCount() + 1);
             $alreadyExistingTerm->setLatestSearch(new \DateTimeImmutable());
+            $alreadyExistingTerm->setLatestResultCount($this->em->getRepository(Recipe::class)->findNumberOfRecpiesByTerm($term));
         } else {
             $newTerm = new Searchterm();
             $newTerm->setTerm(mb_strtolower($term));
             $newTerm->setFirstSearch(new \DateTimeImmutable());
             $newTerm->setLatestSearch(new \DateTimeImmutable());
+            $newTerm->setLatestResultCount($this->em->getRepository(Recipe::class)->findNumberOfRecpiesByTerm($term));
             $newTerm->setCount(1);
             $this->em->persist($newTerm);
         }
@@ -35,8 +37,15 @@ class RecipeController extends Controller {
     }
 
     /**
-     * @Route("/", name="latest")
-     * @Route("/suche/{term}", name="latestWithTerm")
+     * @Route("/", name="index")
+     */
+    public function index() {
+        return $this->redirectToRoute('latest', [], 301);
+    }
+
+    /**
+     * @Route("/rezepte/", name="latest")
+     * @Route("/rezepte/suche/{term}", name="latestWithTerm")
      */
     public function latest(Request $request, string $term = null) {
         $recipePaginator = null;
@@ -54,15 +63,14 @@ class RecipeController extends Controller {
         }
 
         return $this->render('recipe/list.html.twig', [
-                    'controller_name' => 'RecipeController',
                     'recipes' => $recipePaginator,
                     'term' => $term
         ]);
     }
 
     /**
-     * @Route("/blog/{slug}", name="blog")
-     * @Route("/blog/{slug}/suche/{term}", name="blogWithTerm")
+     * @Route("/rezepte/blog/{slug}", name="blog")
+     * @Route("/rezepte/blog/{slug}/suche/{term}", name="blogWithTerm")
      */
     public function blog(Request $request, string $slug, string $term = null) {
         $recipePaginator = null;
@@ -80,15 +88,14 @@ class RecipeController extends Controller {
         }
 
         return $this->render('recipe/list.html.twig', [
-            'controller_name' => 'RecipeController',
             'recipes' => $recipePaginator,
             'term' => $term
         ]);
     }
 
     /**
-     * @Route("/kategorie/{slug}", name="category")
-     * @Route("/kategorie/{slug}/suche/{term}", name="categoryWithTerm")
+     * @Route("/rezepte/kategorie/{slug}", name="category")
+     * @Route("/rezepte/kategorie/{slug}/suche/{term}", name="categoryWithTerm")
      */
     public function category(Request $request, $slug, $term = null) {
         $recipePaginator = null;
@@ -106,7 +113,6 @@ class RecipeController extends Controller {
         }
 
         return $this->render('recipe/list.html.twig', [
-            'controller_name' => 'RecipeController',
             'recipes' => $recipePaginator,
             'term' => $term
         ]);
@@ -116,8 +122,19 @@ class RecipeController extends Controller {
         $numberOfRecipes = $this->em->getRepository(Recipe::class)->findNumberOfRecipes();
         $numberOfBlogs = $this->em->getRepository(Blog::class)->findNumberOfBlogs();
         return $this->render(
-                        'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
+            'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
         );
     }
 
+    public function termCloud() {
+        $mostUsedTerms = $this->em->getRepository(Searchterm::class)->findMostUsedTerms();
+        $mostUsedTermsForTemplate = [];
+        foreach($mostUsedTerms as $key => $value) {
+            $mostUsedTermsForTemplate[] = array("term" => $value, "level" => intdiv($key, 5));
+        }
+        shuffle($mostUsedTermsForTemplate);
+        return $this->render(
+            'recipe/termcloud.html.twig', array('mostUsedTerms' => $mostUsedTermsForTemplate)
+        );
+    }
 }

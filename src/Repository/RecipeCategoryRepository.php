@@ -19,23 +19,6 @@ class RecipeCategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, RecipeCategory::class);
     }
 
-//    /**
-//     * @return RecipeCategory[] Returns an array of RecipeCategory objects
-//     */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
     public function findOneBySlugOrAlternative($value): ?RecipeCategory {
         return $this->createQueryBuilder('r')
             ->addSelect('a')

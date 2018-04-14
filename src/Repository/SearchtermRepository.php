@@ -26,4 +26,13 @@ class SearchtermRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findMostUsedTerms() {
+        return $this->createQueryBuilder('t')
+            ->orderBy('t.count')
+            ->orderBy('t.latestResultCount')
+            ->setMaxResults(30)
+            ->getQuery()
+            ->getResult();
+    }
 }

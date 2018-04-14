@@ -103,4 +103,13 @@ class RecipeRepository extends ServiceEntityRepository {
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findNumberOfRecpiesByTerm($term) {
+        return $this->getBasicQueryBuilder()
+            ->select('count(r.id)')
+            ->where('r.title LIKE :term')
+            ->setParameter(':term', '%'.$term.'%')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

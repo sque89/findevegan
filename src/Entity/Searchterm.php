@@ -34,6 +34,11 @@ class Searchterm
     /**
      * @ORM\Column(type="integer")
      */
+    private $latestResultCount;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
     private $count;
 
     public function getId()
@@ -41,8 +46,7 @@ class Searchterm
         return $this->id;
     }
 
-    public function getTerm(): ?string
-    {
+    public function getTerm(): ?string {
         return $this->term;
     }
 
@@ -73,6 +77,16 @@ class Searchterm
     public function setLatestSearch(\DateTimeImmutable $latestSearch): self
     {
         $this->latestSearch = $latestSearch;
+
+        return $this;
+    }
+
+    public function getLatestResultCount() {
+        return $this->latestResultCount;
+    }
+
+    public function setLatestResultCount($latestResultCount) : self {
+        $this->latestResultCount = $latestResultCount;
 
         return $this;
     }
