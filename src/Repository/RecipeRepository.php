@@ -58,6 +58,20 @@ class RecipeRepository extends ServiceEntityRepository {
         );
     }
 
+    public function findByBlogSlugAndCategorySlug($slug, $categorySlug, $page) {
+        return $this->getPaginator(
+            $this->getBasicQueryBuilder()
+                ->join('r.blog', 'b')
+                ->join('r.categories', 'c')
+                ->andWhere('c.slug = :categorySlug')
+                ->andWhere('b.slug = :slug')
+                ->andWhere('b.enabled = 1')
+                ->setParameter(':slug', $slug)
+                ->setParameter(':categorySlug', $categorySlug),
+            $page
+        );
+    }
+
     public function findByBlogSlugAndTerm($slug, $term, $page) {
         return $this->getPaginator(
             $this->getBasicQueryBuilder()
@@ -66,6 +80,20 @@ class RecipeRepository extends ServiceEntityRepository {
                 ->andWhere('r.title LIKE :term')
                 ->setParameter(':slug', $slug)
                 ->setParameter(':term', '%'.$term.'%'),
+            $page);
+    }
+
+    public function findByBlogSlugAndCategorySlugAndTerm($slug, $categorySlug, $term, $page) {
+        return $this->getPaginator(
+            $this->getBasicQueryBuilder()
+                ->join('r.blog', 'b')
+                ->join('r.categories', 'c')
+                ->andWhere('c.slug = :categorySlug')
+                ->andWhere('b.slug = :slug')
+                ->andWhere('r.title LIKE :term')
+                ->setParameter(':slug', $slug)
+                ->setParameter(':term', '%'.$term.'%')
+                ->setParameter(':categorySlug', $categorySlug),
             $page);
     }
 

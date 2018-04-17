@@ -22,7 +22,7 @@ class RecipeCategory
     private $title;
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50, unique=true)
      */
     private $slug;
 

@@ -4,76 +4,91 @@
 
 {% block body %}
     <div class="container">
-        <div class="row">
+        <div class="row mt-5 mb-3">
             <div class="col-12">
                 <form method="GET" class="w-100">
-                    <div class="input-group input-group-lg mt-5 mb-5">
+                    <div class="input-group input-group-lg ">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="inputGroup-sizing-lg">
                                 <span class="oi oi-magnifying-glass"></span>
                             </span>
                         </div>
-                        <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}">
+                        <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}" placeholder="{{searchPlaceholder}}">
                     </div>
                 </form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="pagerfanta mb-4">
-                    {{
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <ul class="list-inline">
+                    {% for category in categories %}
+                        <li class="list-inline-item">
+                            <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% if (recipes |length > 0) %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="pagerfanta mb-4">
+                        {{
                         pagerfanta(recipes, 'twitter_bootstrap4', {
                             'omitFirstPage': true,
                             'css_container_class': 'pagination justify-content-center',
                             'prev_message': '<span class="oi oi-chevron-left"></span>',
                             'next_message': '<span class="oi oi-chevron-right"></span>',
                         })
-                    }}
-                </div>
-            </div>
-        </div>
-        {% for recipeRow in recipes|batch(2) %}
-            <div class="card-deck">
-                {% for recipe in recipeRow %}
-                    <div class="card my-2">
-                        <a href="{{recipe.permalink}}">
-                            <img class="card-img-top" src="/images/{{recipe.image}}.jpg" alt="{{recipe.title}}">
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <a href="{{recipe.permalink}}">{{recipe.title}}</a>
-                            </h5>
-                            <p class="card-text">
-                                von <a href="{{path('blog', {'slug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
-                            </p>
-                            {% if (recipe.categories|length > 0) %}
-                                <p class="card-text">
-                                    {% for recipeCategory in recipe.categories %}
-                                        // <a href="{{path('category', {'slug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
-                                    {% endfor %}
-                                </p>
-                            {% endif %}
-                        </div>
-                        <div class="card-footer">
-                            <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
-                        </div>
+                        }}
                     </div>
-                {% endfor %}
+                </div>
             </div>
-        {% endfor %}
-        <div class="row">
-            <div class="col-12">
-                <div class="pagerfanta mt-4 mb-5">
-                    {{
+            {% for recipeRow in recipes|batch(2) %}
+                <div class="card-deck">
+                    {% for recipe in recipeRow %}
+                        <div class="card my-2">
+                            <a href="{{recipe.permalink}}">
+                                <img class="card-img-top" src="/images/{{recipe.image}}.jpg" alt="{{recipe.title}}">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <a href="{{recipe.permalink}}">{{recipe.title}}</a>
+                                </h5>
+                                <p class="card-text">
+                                    von <a href="{{path('blog', {'slug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
+                                </p>
+                                {% if (recipe.categories|length > 0) %}
+                                    <p class="card-text">
+                                        {% for recipeCategory in recipe.categories %}
+                                            // <a href="{{path('blogWithCategory', {'slug': recipe.blog.slug, 'categorySlug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
+                                        {% endfor %}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer">
+                                <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="pagerfanta mt-4 mb-5">
+                        {{
                         pagerfanta(recipes, 'twitter_bootstrap4', {
                             'omitFirstPage': true,
                             'css_container_class': 'pagination justify-content-center',
                             'prev_message': '<span class="oi oi-chevron-left"></span>',
                             'next_message': '<span class="oi oi-chevron-right"></span>',
                         })
-                    }}
+                        }}
+                    </div>
                 </div>
             </div>
-        </div>
+        {% else %}
+            Leider wurden keine Rezepte für deine Anfrage gefunden.
+        {% endif %}
     </div>
 {% endblock %}
