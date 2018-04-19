@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello!{% endblock %}
+{% block title %}Bie uns gelistete Blogs{% endblock %}
 
 {% block body %}
     <div class="container pt-5">
@@ -17,10 +17,10 @@
                             </h5>
                             <p class="card-text">
                                 {% for usedCategory in blog["usedCategories"] %}
-                                    // <a href="{{path('blogWithCategory', {'slug': blog["blog"].slug, 'categorySlug': usedCategory.slug})}}">{{usedCategory.title}}</a>
+                                    // <a href="{{path('blogWithCategory', {'blogSlug': blog["blog"].slug, 'categorySlug': usedCategory.slug})}}">{{usedCategory.title}}</a>
                                 {% endfor %}
                             </p>
-                            <a href="{{path('blog', {'slug': blog["blog"].slug})}}" class="btn btn-primary">zu den Rezepten</a>
+                            <a href="{{path('blog', {'blogSlug': blog["blog"].slug})}}" class="btn btn-primary">zu den Rezepten</a>
                         </div>
                     </div>
                 </div>

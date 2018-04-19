@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello!{% endblock %}
+{% block title %}{{pageInfo["title"]}}{% endblock %}
 
 {% block body %}
     <div class="container">
@@ -18,15 +18,34 @@
                 </form>
             </div>
         </div>
-        <div class="row mb-5">
+        <div class="row mb-3">
             <div class="col-12 text-center">
-                <ul class="list-inline">
-                    {% for category in categories %}
-                        <li class="list-inline-item">
-                            <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
+                <div class="d-none d-sm-block">
+                    <ul class="list-inline">
+                        {% for category in categories %}
+                            <li class="list-inline-item">
+                                <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="d-block d-sm-none">
+                    <button class="btn btn-outline-primary w-100 mb-2" type="button" data-toggle="collapse" data-target="#mobileCategoryList" aria-expanded="false" aria-controls="mobileCategoryList">
+                        Kategorien
+                    </button>
+                    <ul class="list-inline collapse" id="mobileCategoryList">
+                        {% for category in categories %}
+                            <li class="list-inline-item">
+                                <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <h1>{{pageInfo["headline"]}}</h1>
             </div>
         </div>
         {% if (recipes |length > 0) %}
@@ -56,12 +75,12 @@
                                     <a href="{{recipe.permalink}}">{{recipe.title}}</a>
                                 </h5>
                                 <p class="card-text">
-                                    von <a href="{{path('blog', {'slug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
+                                    von <a href="{{path('blog', {'blogSlug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
                                 </p>
                                 {% if (recipe.categories|length > 0) %}
                                     <p class="card-text">
                                         {% for recipeCategory in recipe.categories %}
-                                            // <a href="{{path('blogWithCategory', {'slug': recipe.blog.slug, 'categorySlug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
+                                            // <a href="{{path('blogWithCategory', {'blogSlug': recipe.blog.slug, 'categorySlug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
                                         {% endfor %}
                                     </p>
                                 {% endif %}
