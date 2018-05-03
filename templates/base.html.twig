@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% if pageTitle is defined %} {{ pageTitle }} - {% endif %} FindeVegan</title>
         {% block stylesheets %}
             <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         {% endblock %}
@@ -42,6 +42,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 col-md-9">
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <nav aria-label="breadcrumb" class="w-100">
+                                <ol class="breadcrumb">
+                                    {% block breadcrumb %}{% endblock %}
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
                     {% block body %}{% endblock %}
                 </div>
                 <div class="col-12 col-md-3 sidebar">

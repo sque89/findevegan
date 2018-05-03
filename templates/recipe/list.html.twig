@@ -1,113 +1,138 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{pageInfo["title"]}}{% endblock %}
+{% set pageTitle = pageTextElements["title"] %}
+{% set searchfieldPlaceholder = pageTextElements["searchfieldPlaceholder"] %}
+{% set breadcrumbItems = pageTextElements["breadcrumb"] %}
 
+{% block breadcrumb %}
+    <li class="breadcrumb-item">
+        <a href="{{path('latest')}}">Alle Rezepte</a>
+    </li>
+    {% for item in breadcrumbItems %}
+        <li class="breadcrumb-item">
+            <a href="{{item.url}}">{{item.label}}</a>
+        </li>
+    {% endfor %}
+{% endblock%}
 {% block body %}
-    <div class="container">
-        <div class="row mt-5 mb-3">
-            <div class="col-12">
-                <form method="GET" class="w-100">
-                    <div class="input-group input-group-lg ">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="inputGroup-sizing-lg">
-                                <span class="oi oi-magnifying-glass"></span>
-                            </span>
-                        </div>
-                        <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}" placeholder="{{searchPlaceholder}}">
+    <div class="row mt-3 mb-3">
+        <div class="col-12">
+            <form method="GET" class="w-100">
+                <div class="input-group input-group-lg ">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-lg">
+                            <span class="oi oi-magnifying-glass"></span>
+                        </span>
                     </div>
-                </form>
-            </div>
+                    <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}" placeholder="{{searchfieldPlaceholder}}">
+                </div>
+            </form>
         </div>
-        <div class="row mb-3">
-            <div class="col-12 text-center">
-                <div class="d-none d-sm-block">
-                    <ul class="list-inline">
-                        {% for category in categories %}
-                            <li class="list-inline-item">
-                                <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="d-block d-sm-none">
-                    <button class="btn btn-outline-primary w-100 mb-2" type="button" data-toggle="collapse" data-target="#mobileCategoryList" aria-expanded="false" aria-controls="mobileCategoryList">
-                        Kategorien
-                    </button>
-                    <ul class="list-inline collapse" id="mobileCategoryList">
-                        {% for category in categories %}
-                            <li class="list-inline-item">
-                                <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-12 text-center">
-                <h1>{{pageInfo["headline"]}}</h1>
-            </div>
-        </div>
-        {% if (recipes |length > 0) %}
-            <div class="row">
-                <div class="col-12">
-                    <div class="pagerfanta mb-4">
-                        {{
-                        pagerfanta(recipes, 'twitter_bootstrap4', {
-                            'omitFirstPage': true,
-                            'css_container_class': 'pagination justify-content-center',
-                            'prev_message': '<span class="oi oi-chevron-left"></span>',
-                            'next_message': '<span class="oi oi-chevron-right"></span>',
-                        })
-                        }}
-                    </div>
-                </div>
-            </div>
-            {% for recipeRow in recipes|batch(2) %}
-                <div class="card-deck">
-                    {% for recipe in recipeRow %}
-                        <div class="card my-2">
-                            <a href="{{recipe.permalink}}">
-                                <img class="card-img-top" src="/images/{{recipe.image}}.jpg" alt="{{recipe.title}}">
-                            </a>
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    <a href="{{recipe.permalink}}">{{recipe.title}}</a>
-                                </h5>
-                                <p class="card-text">
-                                    von <a href="{{path('blog', {'blogSlug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
-                                </p>
-                                {% if (recipe.categories|length > 0) %}
-                                    <p class="card-text">
-                                        {% for recipeCategory in recipe.categories %}
-                                            // <a href="{{path('blogWithCategory', {'blogSlug': recipe.blog.slug, 'categorySlug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
-                                        {% endfor %}
-                                    </p>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer">
-                                <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            <div class="row">
-                <div class="col-12">
-                    <div class="pagerfanta mt-4 mb-5">
-                        {{
-                        pagerfanta(recipes, 'twitter_bootstrap4', {
-                            'omitFirstPage': true,
-                            'css_container_class': 'pagination justify-content-center',
-                            'prev_message': '<span class="oi oi-chevron-left"></span>',
-                            'next_message': '<span class="oi oi-chevron-right"></span>',
-                        })
-                        }}
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            Leider wurden keine Rezepte für deine Anfrage gefunden.
-        {% endif %}
     </div>
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <div class="d-none d-sm-block">
+                <ul class="list-inline">
+                    {% for category in categories %}
+                        <li class="list-inline-item">
+                            <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="d-block d-sm-none">
+                <button class="btn btn-outline-primary w-100 mb-2" type="button" data-toggle="collapse" data-target="#mobileCategoryList" aria-expanded="false" aria-controls="mobileCategoryList">
+                    Kategorien
+                </button>
+                <ul class="list-inline collapse" id="mobileCategoryList">
+                    {% for category in categories %}
+                        <li class="list-inline-item">
+                            <a href="{{category.path}}" class="badge badge-primary">{{category.title}}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1>{{pageTitle}}</h1>
+        </div>
+    </div>
+    {% if (recipes |length > 0) %}
+        <div class="row">
+            <div class="col-12">
+                <div class="pagerfanta mb-4">
+                    {{
+                        pagerfanta(recipes, 'twitter_bootstrap4', {
+                            'omitFirstPage': true,
+                            'css_container_class': 'pagination justify-content-center',
+                            'prev_message': '<span class="oi oi-chevron-left"></span>',
+                            'next_message': '<span class="oi oi-chevron-right"></span>',
+                        })
+                    }}
+                </div>
+            </div>
+        </div>
+        {% for recipeRow in recipes|batch(2) %}
+            <div class="card-deck">
+                {% for recipe in recipeRow %}
+                    <div class="card my-2">
+                        <a href="{{recipe.permalink}}">
+                            <img class="card-img-top" src="/images/{{recipe.image}}.jpg" alt="{{recipe.title}}">
+                        </a>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{{recipe.permalink}}">{{recipe.title}}</a>
+                            </h5>
+                            <p class="card-text">
+                                von <a href="{{path('blog', {'blogSlug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
+                            </p>
+                            {% if (recipe.categories|length > 0) %}
+                                <p class="card-text">
+                                    {% for recipeCategory in recipe.categories %}
+                                        // <a href="{{path('blogWithCategory', {'blogSlug': recipe.blog.slug, 'categorySlug': recipeCategory.slug})}}">{{recipeCategory.title}}</a>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="row">
+            <div class="col-12">
+                <div class="pagerfanta mt-4 mb-5">
+                    {{
+                        pagerfanta(recipes, 'twitter_bootstrap4', {
+                            'omitFirstPage': true,
+                            'css_container_class': 'pagination justify-content-center',
+                            'prev_message': '<span class="oi oi-chevron-left"></span>',
+                            'next_message': '<span class="oi oi-chevron-right"></span>',
+                        })
+                    }}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="jumbotron">
+            <h2 class="display-4">Deine Anfrage ergab leider keine Treffer.</h2>
+            <p class="lead">Für die ausgewählten Kriterien haben wir aktuell leider keine Rezepte verfügbar.</p>
+            <hr class="my-4">
+            {% if term is not null %}
+                <p>Für die größt-mögliche Auswahl wiederhole die Suche direkt auf der Startseite um alle Rezepte zu berücksichtigen.</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="{{path('latestWithTerm', {'term': term})}}">Suche wiederholen</a>
+                </p>
+            {% else %}
+                <p>Für die größt-mögliche Auswahl stöbere oder starte eine Suche in allen Rezpeten, auf der Startseite</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="{{path('latest')}}">zur Startseite</a>
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}

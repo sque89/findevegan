@@ -61,34 +61,58 @@ class RecipeController extends Controller {
         return $categories;
     }
 
-    private function getPageInfo($page = 1, $category = null, $blog = null, $term = null) {
+    private function getPageTextElements($page = 1, $category = null, $blog = null, $term = null) {
         $title = "Die aktuellsten veganen Rezpete";
-        $headline = "Aktuell";
+        $searchfieldPlaceholder = "Suchbegriff z.B. Nudeln";
+        $breadcrumb = [];
 
         if ($category && $blog && $term) {
-            $title = sprintf("vegane Rezepte mit \"%s\" bei %s // %s", $term, $blog->getTitle(), $category->getTitle());
-            $headline = sprintf("Ergebnisse mit \"%s\" bei %s // %s", $term, $blog->getTitle(), $category->getTitle());
+            $title = sprintf("Vegane Rezepte mit \"%s\" von %s in %s", $term, $blog->getTitle(), $category->getTitle());
+            $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
+            $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl(
+                "blogWithCategory",
+                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
+            ));
+            $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
+                "blogWithCategoryAndTerm",
+                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug(), "term" => $term)
+            ));
         } else if ($category && $blog) {
-            $title = sprintf("vegane Rezepte in %s // %s", $blog->getTitle(), $category->getTitle());
-            $headline = sprintf("Rezepte in %s // %s", $blog->getTitle(), $category->getTitle());
+            $title = sprintf("Vegane Rezepte von %s in %s", $blog->getTitle(), $category->getTitle());
+            $searchfieldPlaceholder = sprintf("Suche bei %s in %s", $blog->getTitle(), $category->getTitle());
+            $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
+            $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl(
+                "blogWithCategory",
+                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
+            ));
         } else if ($blog && $term) {
-            $title = sprintf("vegane Rezepte mit \"%s\" bei %s", $term, $blog->getTitle() ?? $category->getTitle());
-            $headline = sprintf("Rezepte mit \"%s\" bei %s", $term, $blog->getTitle() ?? $category->getTitle());
+            $title = sprintf("Vegane Rezepte mit \"%s\" von %s", $term, $blog->getTitle() ?? $category->getTitle());
+            $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
+            $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
+                "blogWithTerm",
+                array("blogSlug" => $blog->getSlug(), "term" => $term)
+            ));
         } else if ($category && $term) {
-            $title = sprintf("vegane Rezepte mit \"%s\" in %s", $term, $category->getTitle() ?? $category->getTitle());
-            $headline = sprintf("Rezepte mit \"%s\" in %s", $term, $category->getTitle() ?? $category->getTitle());
+            $title = sprintf("Vegane Rezepte mit \"%s\" in %s", $term, $category->getTitle() ?? $category->getTitle());
+            $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl("category", array("categorySlug" => $category->getSlug())));
+            $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
+                "categoryWithTerm",
+                array("categorySlug" => $category->getSlug(), "term" => $term)
+            ));
         } else if ($blog) {
-            $title = sprintf("vegane Rezepte von %s", $blog->getTitle());
-            $headline = sprintf("Rezepte von %s", $blog->getTitle());
+            $title = sprintf("Vegane Rezepte von %s", $blog->getTitle());
+            $searchfieldPlaceholder = sprintf("Suche bei %s", $blog->getTitle());
+            $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
         } else if ($category) {
-            $title = sprintf("vegane Rezepte in %s", $category->getTitle());
-            $headline = sprintf("Rezepte in %s", $category->getTitle());
+            $title = sprintf("Vegane Rezepte in %s", $category->getTitle());
+            $searchfieldPlaceholder = sprintf("Suche in %s", $category->getTitle());
+            $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl("category", array("categorySlug" => $category->getSlug())));
         } else if ($term) {
-            $title = sprintf("vegane Rezepte mit \"%s\"", $term);
-            $headline = sprintf("Ergebnisse mit \"%s\"", $term);
+            $title = $headline = sprintf("Vegane Rezepte mit \"%s\"", $term);
+            $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl("latestWithTerm", array("term" => $term)));
         }
 
-        return array("title" => $title, "headline" => $headline);
+        return array("title" => $title, "searchfieldPlaceholder" => $searchfieldPlaceholder, "breadcrumb" => $breadcrumb);
     }
 
     /**
@@ -111,7 +135,7 @@ class RecipeController extends Controller {
                     'term' => $term,
                     'searchPlaceholder' => 'Suche in allen Rezepten',
                     'categories' => $this->getCategoryList('category'),
-                    'pageInfo' => $this->getPageInfo($request->query->get("page", 1), null, null, $term)
+                    'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), null, null, $term)
         ]);
     }
 
@@ -139,7 +163,7 @@ class RecipeController extends Controller {
                 'term' => $term,
                 'searchPlaceholder' => "blub",
                 'categories' => $this->getCategoryList('blogWithCategory', array('blogSlug' => $blog->getSlug())),
-                'pageInfo' => $this->getPageInfo($request->query->get("page", 1), $category, $blog, $term)
+                'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, $blog, $term)
             ]);
     }
 
@@ -157,7 +181,7 @@ class RecipeController extends Controller {
                 'term' => $term,
                 'searchPlaceholder' => "blub",
                 'categories' => $this->getCategoryList('category'),
-                'pageInfo' => $this->getPageInfo($request->query->get("page", 1), $category, null, $term)
+                'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, null, $term)
         ]);
     }
 
@@ -169,7 +193,7 @@ class RecipeController extends Controller {
         $numberOfRecipes = $this->em->getRepository(Recipe::class)->findNumberOfRecipes();
         $numberOfBlogs = $this->em->getRepository(Blog::class)->findNumberOfBlogs();
         return $this->render(
-                        'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
+            'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
         );
     }
 
@@ -185,8 +209,7 @@ class RecipeController extends Controller {
         }
         shuffle($mostUsedTermsForTemplate);
         return $this->render(
-                        'recipe/termcloud.html.twig', array('mostUsedTerms' => $mostUsedTermsForTemplate)
+            'recipe/termcloud.html.twig', array('mostUsedTerms' => $mostUsedTermsForTemplate)
         );
     }
-
 }
