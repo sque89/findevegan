@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7481b308bf8f335216c10f682bd84f3c",
+    "content-hash": "e1320a2e629df0ed8b3c1a50274afcd8",
     "packages": [
         {
             "name": "claviska/simpleimage",
@@ -1177,6 +1177,45 @@
                 "palette"
             ],
             "time": "2016-12-15T09:30:02+00:00"
+        },
+        {
+            "name": "mauricesvay/php-facedetection",
+            "version": "0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mauricesvay/php-facedetection.git",
+                "reference": "b016273ceceacd85562bbc50384fbabc947fe525"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mauricesvay/php-facedetection/zipball/b016273ceceacd85562bbc50384fbabc947fe525",
+                "reference": "b016273ceceacd85562bbc50384fbabc947fe525",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "FaceDetector.php",
+                    "Exception/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Maurice Svay",
+                    "homepage": "https://github.com/mauricesvay/php-facedetection/graphs/contributors"
+                }
+            ],
+            "description": "PHP class to detect one face in images. A pure PHP port of an existing JS code from Karthik Tharavad.",
+            "homepage": "https://github.com/mauricesvay/php-facedetection",
+            "time": "2016-01-26T22:10:00+00:00"
         },
         {
             "name": "monolog/monolog",

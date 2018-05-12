@@ -46,6 +46,13 @@ class Book
      */
     private $asin;
 
+    /**
+     * Many Books have one Blog
+     * @ORM\ManyToOne(targetEntity="Blog", inversedBy="books")
+     * @ORM\JoinColumn(name="blog_id", referencedColumnName="id")
+     */
+    private $blog;
+
     public function getId()
     {
         return $this->id;
@@ -121,5 +128,14 @@ class Book
         $this->asin = $asin;
 
         return $this;
+    }
+
+    public function getBlog(): ?Blog {
+        return $this->blog;
+    }
+
+    public function setBlog($blog): self {
+        $this->blog = blog;
+        return self;
     }
 }

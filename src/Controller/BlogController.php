@@ -27,7 +27,20 @@ class BlogController extends Controller
             ];
         }
         return $this->render('blog/list.html.twig', [
-            'blogs' => $blogs
+            'blogs' => $blogs,
+            'pageTextElements' => array(
+                "title" => "Vegane Foodblogs mit \"" . $firstLetter . "\"",
+                "breadcrumb" => array(
+                    array(
+                        "url" => $this->generateUrl("blogsStartWithLetter", array("firstLetter" => "a")),
+                        "label" => "Blogs"
+                    ),
+                    array(
+                        "url" => $this->generateUrl("blogsStartWithLetter", array("firstLetter" => $firstLetter)),
+                        "label" => "beginnend mit " . $firstLetter
+                    )
+                )
+            )
         ]);
     }
 

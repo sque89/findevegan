@@ -1,19 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% set pageTitle = pageTextElements["title"] %}
-{% set searchfieldPlaceholder = pageTextElements["searchfieldPlaceholder"] %}
-{% set breadcrumbItems = pageTextElements["breadcrumb"] %}
-
-{% block breadcrumb %}
-    <li class="breadcrumb-item">
-        <a href="{{path('latest')}}">Alle Rezepte</a>
-    </li>
-    {% for item in breadcrumbItems %}
-        <li class="breadcrumb-item">
-            <a href="{{item.url}}">{{item.label}}</a>
-        </li>
-    {% endfor %}
-{% endblock%}
 {% block body %}
     <div class="row mt-3 mb-3">
         <div class="col-12">
@@ -24,7 +10,7 @@
                             <span class="oi oi-magnifying-glass"></span>
                         </span>
                     </div>
-                    <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}" placeholder="{{searchfieldPlaceholder}}">
+                    <input type="text" name="q" class="form-control" aria-label="Large" aria-describedby="inputGroup-sizing-sm" value="{{term}}" placeholder="{{pageTextElements["searchfieldPlaceholder"]}}">
                 </div>
             </form>
         </div>
@@ -97,7 +83,7 @@
                             {% endif %}
                         </div>
                         <div class="card-footer">
-                            <small class="text-muted">veröffentlicht am {{recipe.released()|date("d.m.Y")}}</small>
+                            <small class="text-muted">veröffentlicht am {{recipe.released|date("d.m.Y")}}</small>
                         </div>
                     </div>
                 {% endfor %}

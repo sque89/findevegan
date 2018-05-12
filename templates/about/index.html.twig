@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row mb-3">
+        <div class="col-12 text-center">
+            <h1>{{pageTitle}}</h1>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-12">
+            FindeVegan.de ist die Suchmaschine für vegane Rezepte von deutschsprachigen Foodblogs. In unserer Datenbank sammeln wir die Rezepte von mehreren 100 Foodblogs und machen diese über unsere Suchfunktion und die Gliederung in Kategorien bequem durchsuchbar. Wir speichern dabei nur wenige Daten zu den eingelesenen Rezepten, sondern verlinken diese direkt auf den Quell-Blog. Täglich aktualisieren wir unsere Datenbank um neu veröffentliche Rezepte.
+
+            Lege sofort mit der Suche los: <a href="{{path('latest')}}">zur Rezeptsuche</a>
+        </div>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-12">
+            <h2 class="mb-2">Fragen und Antworten</h2>
+            <div id="faqs">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#faq1">
+                                Warum erscheint meine Seite / mein Blog hier?
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="faq1" class="collapse" data-parent="#faqs">
+                        <div class="card-body">
+                            Wir geben unser Bestes, um nur Blogs in unsere Datenbank aufzunehmen, von deren Betreiber/on wir die ausdrückliche Zustimmung dazu haben. Sollte uns dennoch mal ein Fehler unterlaufen sein und deine Seite ist hier gegen deinen Willen aufgeslitet, schreibe uns bitte einfach eine Nachricht an <a href="mailto:info@findevegan.de">info@findevegan.de</a> und wir entfernen deine Seite und alle damit verbundenen Daten umgehend.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#faq2">
+                                Welche Vorraussetzungen muss mein Blog erfüllem um hier registriert werden zu können?
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="faq2" class="collapse"  data-parent="#faqs">
+                        <div class="card-body">
+                            Wir benötigen zum Einlesen deiner Rezepte einen RSS-Feed, der ausschließlich vegane Rezepte enthält, also keine Reiseberichte, Reviews oder ähnliches. Wenn deine Webseite auf WordPress oder Blogspot basiert, reicht es schon aus, dass du all deinen Rezepte ein Schlagwort bzw. ein Label oder eine Kategorie, zum Beispiel "Rezepte" oder "vegane Rezepte" zuweist. WordPress bzw. Blogspot stellt dann automatisch für diese Kennzeihcnung einen eigenen RSS-Feed zur Verfügung. Des Weiteren sollte sichergestellt werden, dass die Einträge des RSS-Feeds auch mindestens ein Foto des Rezepts enthalten. Meistens ist dieses Kriterium bereits erfüllt. Bei WordPress fehlt es manchmal aber auch, was man aber sehr schnell durch das Plugin "Featured Image in RSS Feed" beheben kann. Bei weitergehenden Fragen oder Problemen, schreib uns einfach eine Mail an <a href="mailto:info@findevegan.de">info@findevegan.de</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#faq3">
+                                Was ist zu beachten, damit meine Rezepte in den einzelnen Kategorien eingetragen werden?
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="faq3" class="collapse" data-parent="#faqs">
+                        <div class="card-body">
+                            Die Zuweisung zu den einzelnen Kategorien erfolgt automatisch anhand den verknüpften Schlagworten, Labels und Kategorien. Nachfolgend eine Liste mit gültigen Labels, Schlagworten und Kategorien:<br /><br />
+
+                            Aufstriche: Aufstriche, Aufstrich<br />
+                            Desserts: Dessert, Desserts, Nachspeise, Nachspeisen<br />
+                            Fleischalternativen: Fleischalternative, Fleischalternativen, Vleisch<br />
+                            Grundrezepte: Grundrezept, Grundrezepte<br />
+                            Hauptgerichte: Hauptgericht, Hauptgerichte<br />
+                            Kekse: Keks, Kekse, Cookie, Cookies<br />
+                            Kuchen & Torten: Kuchen, Torte, Torten<br />
+                            Milchalternativen: Milchalternative, Milchalternativen, Pflanzenmilch<br />
+                            Rohkost: Rohkost, roh, rohvegan, roh-vegan, roh vegan, raw, rawvegan, raw-vegan, raw vegan, rohköstlich, rohkoestlich<br />
+                            Smoothies: Smoothie, Smoothies<br />
+                            Suppen: Suppe, Suppen<br />
+                            Vorspeisen: Vorspeise, Vorspeisen<br />
+                            gluteinfrei: glutenfrei, glutenfreies Rezept, glutenfreie Rezepte<br />
+                            rohvegan: roh, rohvegan, raw, rawvegan<br />
+                            sojafrei: sojafrei, sojafreies Rezept, sojafreie Rezepte<br />
+                            zuckerfrei: zuckerfrei<br />
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#faq4">
+                                Wie regelmäßig wird mein Blog hier aktualisiert?
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="faq4" class="collapse" data-parent="#faqs">
+                        <div class="card-body">
+                            Alle Blogs werden jede Nacht auf neue Rezepte untersucht und um diese erweitert.
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#faq5">
+                                Werden auch vegetarische Blogs bzw. Webseiten zugelassen?
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="faq5" class="collapse" data-parent="#faqs">
+                        <div class="card-body">
+                            Nein, wir nehmen ausschließlich komplett vegane Webseiten auf. Falls doch ein nicht-veganes Rezept durchgerutscht sein sollte, bitte melde dieses über den Melden-Button am Rezept
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -66,6 +66,12 @@ class Blog
      */
     private $recipes;
 
+    /**
+     * One Blog has Many Books.
+     * @ORM\OneToMany(targetEntity="Book", mappedBy="blog")
+     */
+    private $books;
+
     public function getId()
     {
         return $this->id;

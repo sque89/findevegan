@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Bie uns gelistete Blogs{% endblock %}
-
 {% block body %}
-    <div class="container pt-5">
+    <div class="container">
+        <div class="row mb-3">
+            <div class="col-12 text-center">
+                <h1>{{pageTitle}}</h1>
+            </div>
+        </div>
         {% for blog in blogs %}
             <div class="row mb-4">
                 <div class="col-12">

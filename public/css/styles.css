@@ -6787,6 +6787,9 @@ nav.navbar {
   .sidebar .weblinks ul li {
     display: inline-block; }
 
+.sidebar .termcloud li {
+  line-height: 0.8; }
+
 .sidebar .termcloud .level-1 {
   font-size: 1rem;
   font-weight: 400; }

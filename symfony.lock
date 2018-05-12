@@ -83,6 +83,9 @@
     "league/color-extractor": {
         "version": "0.3.2"
     },
+    "mauricesvay/php-facedetection": {
+        "version": "0.1.0"
+    },
     "monolog/monolog": {
         "version": "1.23.0"
     },
