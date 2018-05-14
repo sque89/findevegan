@@ -39,7 +39,7 @@ class CrawlController extends AbstractController {
                         unlink('images/' . $newRecipe->getImage() . ".jpg");
                     }
                     echo "vorhandenes rezept erreicht. blog wieder aktuell";
-                    throw new Exception("Vorhandenes Rezept erreicht");
+                    throw new \Exception("Vorhandenes Rezept erreicht");
                 }
             } else {
                 $this->entityManager->persist($newRecipe);

@@ -23,8 +23,9 @@ class RecipeRepository extends ServiceEntityRepository {
     private function getBasicQueryBuilder() {
         return $this->createQueryBuilder('r')
             ->join('r.blog', 'b')
-            ->join('r.categories', 'c')
+            ->leftJoin('r.categories', 'c')
             ->where('r.enabled = 1')
+            ->where('r.imageHasFace = 0')
             ->orderBy('r.released', 'DESC');
     }
 

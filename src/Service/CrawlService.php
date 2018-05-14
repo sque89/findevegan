@@ -25,9 +25,11 @@ class CrawlService {
         "banner"
     ];
     private $recipeCategoryRepository;
+    private $faceDetector;
 
     public function __construct(RecipeCategoryRepository $recipeCategoryRepository) {
         $this->recipeCategoryRepository = $recipeCategoryRepository;
+        $this->faceDetector = new \svay\FaceDetector("detection.dat");
     }
 
     private function pathIsInvalidBecauseOfPathSegment($url) {
@@ -59,21 +61,36 @@ class CrawlService {
 
     private function checkAndStoreImage($path) {
         $name = $this->generateImageId();
+        $returnValue = array(
+            "name" => $name,
+            "hasFace" => false
+        );
+        $originImagePath = "images/org_" . $name . ".jpg";
+        $thumbImagePath = "images/" . $name . ".jpg";
         $image = new SimpleImage($path);
         if ($image->getWidth() >= 400) {
+            $image->toFile($originImagePath, "image/jpeg", 100);
             $image->thumbnail(400, 320);
-            $image->toFile("images/" . $name . ".jpg", "image/jpeg", 80);
-            return $name;
+            $image->toFile($thumbImagePath, "image/jpeg", 80);
+            $imageHasFace = $this->faceDetector->faceDetect($originImagePath) && $this->faceDetector->faceDetect($thumbImagePath);
+
+            if ($imageHasFace) {
+                $returnValue["hasFace"] = true;
+            }
         }
+        unlink($originImagePath);
+        return $returnValue;
     }
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
         $recipe = new Recipe();
+        $imageData = $this->parseImage($recipeNode->text());
         $recipe->setTitle($this->parseTitle($recipeNode));
         $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
-        $recipe->setImage($this->parseImage($recipeNode->text()));
+        $recipe->setImage($imageData["name"]);
+        $recipe->setImageHasFace($imageData["hasFace"]);
         $recipe->setEnabled(true);
         $recipe->setCrawled(new \DateTime("now"));
         $recipe->setBlog($blog);

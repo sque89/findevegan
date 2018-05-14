@@ -33,6 +33,11 @@ class Recipe
     private $image;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $imageHasFace;
+
+    /**
      * Many Recipes have Many RecipeCategories.
      * @ORM\ManyToMany(targetEntity="RecipeCategory")
      * @ORM\JoinTable(name="recipes_recipe_categories",
@@ -101,6 +106,18 @@ class Recipe
     public function setImage(string $image = null): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getImageHasFace(): ?string
+    {
+        return $this->imageHasFace;
+    }
+
+    public function setImageHasFace(string $imageHasFace = null): self
+    {
+        $this->imageHasFace = $imageHasFace;
 
         return $this;
     }
