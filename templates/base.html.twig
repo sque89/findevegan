@@ -55,7 +55,11 @@
                                     </li>
                                     {% for item in breadcrumbItems %}
                                         <li class="breadcrumb-item">
-                                            <a href="{{item.url}}">{{item.label}}</a>
+                                            {% if item.url %}
+                                                <a href="{{item.url}}">{{item.label}}</a>
+                                            {% else %}
+                                                <span>{{item.label}}</span>
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ol>
@@ -131,6 +135,13 @@
     {% block javascripts %}
         <script src="/js/jquery/jquery.min.js"></script>
         <script src="/js/bootstrap/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $(".recipe-list .card > a").each(function(index, item) {
+                    $(item).height($(item).width() * 0.8);
+                });
+            });
+        </script>
     {% endblock %}
 </body>
 </html>

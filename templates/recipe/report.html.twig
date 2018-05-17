@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row mt-3 mb-3">
+        <div class="col-12">
+            <h1>{{pageTitle}}</h1>
+            {% if found is not null %}
+                {% if sent and success %}
+                    <span class="text-success">Du hast das Rezept erfolgreich gemeldet. Wir prüfen deine Angaben und nehmen das Rezept ggf. aus der Liste. Vielen Dank!</span>
+                {% elseif sent and not success  %}
+                    <span class="text-danger">Leider ist ein Fehler bei der Übermittlung aufgetreten. Bitte versuche es später noch einmal. Vielen Dank!</span>
+                {% else %}
+                    <p>Bitte teile uns den Grund mit warum du dieses Rezept melden möchtest.</p>
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <input class="btn btn-primary" type="submit" value="Rezept melden" />
+                    {{ form_end(form) }}
+                {% endif %}
+                {% else %}
+                    <span>Das Rezept wurde nicht gefunden</span>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

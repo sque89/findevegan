@@ -60,6 +60,7 @@
                 </div>
             </div>
         </div>
+        <div class="recipe-list">
         {% for recipeRow in recipes|batch(2) %}
             <div class="card-deck">
                 {% for recipe in recipeRow %}
@@ -69,7 +70,7 @@
                         </a>
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a href="{{recipe.permalink}}" target="_blank">{{recipe.title}}</a>
+                                <a href="http://{{recipe.permalink}}" target="_blank">{{recipe.title}}</a>
                             </h5>
                             <p class="card-text">
                                 von <a href="{{path('blog', {'blogSlug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>
@@ -82,13 +83,17 @@
                                 </p>
                             {% endif %}
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer d-flex justify-content-between">
                             <small class="text-muted">veröffentlicht am {{recipe.released|date("d.m.Y")}}</small>
+                            <a href="{{path('reportRecipe', {'recipeId': recipe.id})}}" title="Rezept melden">
+                                <span class="oi oi-bolt report-recipe"></span>
+                            </a>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% endfor %}
+        </div>
         <div class="row">
             <div class="col-12">
                 <div class="pagerfanta mt-4 mb-5">

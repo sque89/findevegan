@@ -11,6 +11,7 @@ use App\Entity\Blog;
 use App\Entity\Searchterm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Form\ReportRecipeType;
 
 class RecipeController extends Controller {
 
@@ -70,34 +71,29 @@ class RecipeController extends Controller {
             $title = sprintf("Vegane Rezepte mit \"%s\" von %s in %s", $term, $blog->getTitle(), $category->getTitle());
             $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
             $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl(
-                "blogWithCategory",
-                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
+                        "blogWithCategory", array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
             ));
             $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
-                "blogWithCategoryAndTerm",
-                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug(), "term" => $term)
+                        "blogWithCategoryAndTerm", array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug(), "term" => $term)
             ));
         } else if ($category && $blog) {
             $title = sprintf("Vegane Rezepte von %s in %s", $blog->getTitle(), $category->getTitle());
             $searchfieldPlaceholder = sprintf("Suche bei %s in %s", $blog->getTitle(), $category->getTitle());
             $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
             $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl(
-                "blogWithCategory",
-                array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
+                        "blogWithCategory", array("blogSlug" => $blog->getSlug(), "categorySlug" => $category->getSlug())
             ));
         } else if ($blog && $term) {
             $title = sprintf("Vegane Rezepte mit \"%s\" von %s", $term, $blog->getTitle() ?? $category->getTitle());
             $breadcrumb[] = array("label" => $blog->getTitle(), "url" => $this->generateUrl("blog", array("blogSlug" => $blog->getSlug())));
             $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
-                "blogWithTerm",
-                array("blogSlug" => $blog->getSlug(), "term" => $term)
+                        "blogWithTerm", array("blogSlug" => $blog->getSlug(), "term" => $term)
             ));
         } else if ($category && $term) {
             $title = sprintf("Vegane Rezepte mit \"%s\" in %s", $term, $category->getTitle() ?? $category->getTitle());
             $breadcrumb[] = array("label" => $category->getTitle(), "url" => $this->generateUrl("category", array("categorySlug" => $category->getSlug())));
             $breadcrumb[] = array("label" => '"' . $term . '"', "url" => $this->generateUrl(
-                "categoryWithTerm",
-                array("categorySlug" => $category->getSlug(), "term" => $term)
+                        "categoryWithTerm", array("categorySlug" => $category->getSlug(), "term" => $term)
             ));
         } else if ($blog) {
             $title = sprintf("Vegane Rezepte von %s", $blog->getTitle());
@@ -158,13 +154,13 @@ class RecipeController extends Controller {
         }
 
         return $response ??
-            $this->render('recipe/list.html.twig', [
-                'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, $blogSlug, $term),
-                'term' => $term,
-                'searchPlaceholder' => "blub",
-                'categories' => $this->getCategoryList('blogWithCategory', array('blogSlug' => $blog->getSlug())),
-                'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, $blog, $term)
-            ]);
+                $this->render('recipe/list.html.twig', [
+                    'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, $blogSlug, $term),
+                    'term' => $term,
+                    'searchPlaceholder' => "blub",
+                    'categories' => $this->getCategoryList('blogWithCategory', array('blogSlug' => $blog->getSlug())),
+                    'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, $blog, $term)
+        ]);
     }
 
     /**
@@ -176,12 +172,52 @@ class RecipeController extends Controller {
         $this->handleSearchTerm($term);
 
         return $this->handleUglyTerm($request->query->get("q"), 'categoryWithTerm', array("categorySlug" => $categorySlug)) ??
-            $this->render('recipe/list.html.twig', [
-                'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, null, $term),
-                'term' => $term,
-                'searchPlaceholder' => "blub",
-                'categories' => $this->getCategoryList('category'),
-                'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, null, $term)
+                $this->render('recipe/list.html.twig', [
+                    'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, null, $term),
+                    'term' => $term,
+                    'searchPlaceholder' => "blub",
+                    'categories' => $this->getCategoryList('category'),
+                    'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, null, $term)
+        ]);
+    }
+
+    /**
+     * @Route("/rezept/melden/{recipeId}", name="reportRecipe")
+     */
+    public function reportRecipe(Request $request, $recipeId = null) {
+        $sent = false;
+        $success = false;
+        $recipe = $this->em->getRepository(Recipe::class)->findOneById($recipeId);
+        $form = $this->createForm(ReportRecipeType::class);
+        $form->get('recipeId')->setData($recipeId);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $sent = true;
+            try {
+                $reportFormData = $form->getData();
+                $recipeToBan = $this->em->getRepository(Recipe::class)->findOneById($reportFormData["recipeId"]);
+                $recipeToBan->setBanned(Recipe::$BANNED_OPTIONS["BAN_PROPOSED"]);
+                $recipeToBan->setBanReason($reportFormData["reason"]);
+                $this->em->flush();
+                $success = true;
+            } catch (\Exception $exception) {
+                $success = false;
+            }
+        }
+
+        return $this->render('recipe/report.html.twig', [
+            'pageTextElements' => array(
+                'title' => 'Rezept melden',
+                'breadcrumb' => array(
+                    array('label' => 'Rezept melden', 'url' => null),
+                    array('label' => $recipe ? $recipe->getBlog()->getTitle() . ": " . $recipe->getTitle() : 'nicht gefunden', 'url' => $this->generateUrl('reportRecipe', array('recipeId' => $recipeId)))
+                )
+            ),
+            'form' => $form->createView(),
+            'sent' => $sent,
+            'success' => $success,
+            'found' => $recipe
         ]);
     }
 
@@ -193,7 +229,7 @@ class RecipeController extends Controller {
         $numberOfRecipes = $this->em->getRepository(Recipe::class)->findNumberOfRecipes();
         $numberOfBlogs = $this->em->getRepository(Blog::class)->findNumberOfBlogs();
         return $this->render(
-            'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
+                        'recipe/statistic.html.twig', array('numberOfRecipes' => $numberOfRecipes, 'numberOfBlogs' => $numberOfBlogs)
         );
     }
 
@@ -209,7 +245,8 @@ class RecipeController extends Controller {
         }
         shuffle($mostUsedTermsForTemplate);
         return $this->render(
-            'recipe/termcloud.html.twig', array('mostUsedTerms' => $mostUsedTermsForTemplate)
+                        'recipe/termcloud.html.twig', array('mostUsedTerms' => $mostUsedTermsForTemplate)
         );
     }
+
 }

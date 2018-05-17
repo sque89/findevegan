@@ -54,11 +54,6 @@ class Recipe
     private $categories;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $enabled;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private $released;
@@ -79,6 +74,11 @@ class Recipe
      * @ORM\Column(type="smallint")
      */
     private $banned;
+
+    /**
+     * @ORM\Column(type="string", length=500, nullable=true)
+     */
+    private $banReason;
 
     public function __construct() {
         $this->banned = Recipe::$BANNED_OPTIONS["UNBANNED"];
@@ -147,18 +147,6 @@ class Recipe
         return $this;
     }
 
-    public function getEnabled(): ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
     public function getReleased(): ?\DateTimeInterface
     {
         return $this->released;
@@ -198,9 +186,20 @@ class Recipe
         return $this->banned;
     }
 
-    public function setBanned(Blog $banned): self
+    public function setBanned(int $banned): self
     {
         $this->banned = $banned;
+
+        return $this;
+    }
+
+    public function getBanReason(): ?string {
+        return $this->banReason;
+    }
+
+    public function setBanReason(string $banReason): self
+    {
+        $this->banReason = $banReason;
 
         return $this;
     }
