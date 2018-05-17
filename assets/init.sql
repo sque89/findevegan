@@ -385,4 +385,3 @@ INSERT INTO `blog` (`type`, `slug`, `url`, `feed`, `title`, `enabled`, `email`, 
 ('wordpress', 'vegan-24-7', 'http://vegan247.de', 'http://vegan247.de/category/blog-rezepte/feed/', 'Vegan 24/7', '1', 'kontakt@vegan247.de', '0'),
 ('wordpress', 'veganocarb', 'http://veganocarb.de', 'http://veganocarb.de/category/uncategorized/rezepte/feed/', 'VegaNoCarb', '1', 'info@veganocarb.de', '0'),
 ('wordpress', 'wir-essen-gesund', 'http://www.wir-essen-gesund.de', 'http://www.wir-essen-gesund.de/vegane-rezepte/feed/', 'WIR ESSEN GESUND', '1', 'd.beuschel@picabird.de', '0');
-

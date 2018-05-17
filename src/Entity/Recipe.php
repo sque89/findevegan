@@ -10,6 +10,12 @@ use App\Entity\Blog;
  */
 class Recipe
 {
+    public static $BANNED_OPTIONS = array(
+        "UNBANNED" => 0,
+        "BAN_PROPOSED" => 1,
+        "BANNED" => 2
+    );
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -68,6 +74,15 @@ class Recipe
      * @ORM\JoinColumn(name="blog_id", referencedColumnName="id")
      */
     private $blog;
+
+    /**
+     * @ORM\Column(type="smallint")
+     */
+    private $banned;
+
+    public function __construct() {
+        $this->banned = Recipe::$BANNED_OPTIONS["UNBANNED"];
+    }
 
     public function getId()
     {
@@ -175,6 +190,17 @@ class Recipe
     public function setBlog(Blog $blog): self
     {
         $this->blog = $blog;
+
+        return $this;
+    }
+
+    public function getBanned(): ?int {
+        return $this->banned;
+    }
+
+    public function setBanned(Blog $banned): self
+    {
+        $this->banned = $banned;
 
         return $this;
     }

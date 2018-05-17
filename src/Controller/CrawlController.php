@@ -30,15 +30,14 @@ class CrawlController extends AbstractController {
                 // Wenn alle Rezpete erneut gecrawlt werden sollen
                 if ($continueOnDuplicate === 'true') {
                     if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage()) {
-                        unlink('images/' . $newRecipe->getImage() . ".jpg");
+                        unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
                     } else {
                         $alreadyExistingRecipe->setImage($newRecipe->getImage());
                     }
                 } else {
                     if ($newRecipe->getImage()) {
-                        unlink('images/' . $newRecipe->getImage() . ".jpg");
+                        unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
                     }
-                    echo "vorhandenes rezept erreicht. blog wieder aktuell";
                     throw new \Exception("Vorhandenes Rezept erreicht");
                 }
             } else {
@@ -67,6 +66,7 @@ class CrawlController extends AbstractController {
                     $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?paged=' . ++$currentPage));
                 }
             } catch (\Exception $exception) {
+                echo $exception->getMessage();
                 echo "Blog nicht gefunden oder Ende erreicht";
             }
         } else if ($blog->getType() === "blogspot") {

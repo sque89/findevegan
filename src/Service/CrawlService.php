@@ -65,14 +65,14 @@ class CrawlService {
             "name" => $name,
             "hasFace" => false
         );
-        $originImagePath = "images/org_" . $name . ".jpg";
-        $thumbImagePath = "images/" . $name . ".jpg";
+        $originImagePath = "images/recipes/temp/org_" . $name . ".jpg";
+        $thumbImagePath = "images/recipes/" . $name . ".jpg";
         $image = new SimpleImage($path);
         if ($image->getWidth() >= 400) {
             $image->toFile($originImagePath, "image/jpeg", 100);
             $image->thumbnail(400, 320);
             $image->toFile($thumbImagePath, "image/jpeg", 80);
-            $imageHasFace = $this->faceDetector->faceDetect($originImagePath) && $this->faceDetector->faceDetect($thumbImagePath);
+            $imageHasFace = $this->faceDetector->faceDetect($originImagePath) || $this->faceDetector->faceDetect($thumbImagePath);
 
             if ($imageHasFace) {
                 $returnValue["hasFace"] = true;
@@ -117,16 +117,26 @@ class CrawlService {
     }
 
     public function parsePermalink(Crawler $recipeNode) {
+        $link = null;
+
         if ($recipeNode->filter('link')->count() > 0) {
-            return $recipeNode->filter('link')->first()->text();
+            $link = $recipeNode->filter('link')->first()->text();
         } else if ($recipeNode->filterXPath("//default:link")->count() == 1) {
-            var_dump($recipeNode->filterXPath("//default:link")->first()->text());
-            return $recipeNode->filterXPath("//default:link")->first()->text();
+            $link = $recipeNode->filterXPath("//default:link")->first()->text();
         } else if ($recipeNode->filterXPath("//default:link")->count() > 1 && $recipeNode->filterXPath("//default:link[@rel='alternate']")->count() == 1) {
             echo $recipeNode->filterXPath("//default:link[@rel='alternate']")->first()->text();
-            return $recipeNode->filterXPath("//default:link[@rel='alternate']")->first()->attr("href");
+            $link = $recipeNode->filterXPath("//default:link[@rel='alternate']")->first()->attr("href");
         }
-        return null;
+
+        if ($link) {
+            $link = str_replace("http://", "", $link);
+            $link = str_replace("https://", "", $link);
+            $link = str_replace("www.", "", $link);
+            $link = preg_replace('/\?.*/', '', $link);
+            return $link;
+        } else {
+            return null;
+        }
     }
 
     public function parseImage(string $nodeContent) {
@@ -138,16 +148,21 @@ class CrawlService {
                 try {
                     return $this->checkAndStoreImage($match);
                 } catch (\Exception $e) {
+                    //echo $e->getMessage(). "<br />";
                     try {
                         return $this->checkAndStoreImage(str_replace("https", "http", $match));
                     } catch (\Exception $ex) {
+                        //echo $e->getMessage(). "<br />";
                         continue;
                     }
                 }
             }
         }
 
-        return null;
+        return array(
+            "name" => null,
+            "hasFace" => false
+        );
     }
 
     public function parseReleaseDate(Crawler $itemNode): \DateTime {
