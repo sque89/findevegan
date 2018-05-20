@@ -91,7 +91,7 @@ class CrawlService {
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
         $recipe->setImage($imageData["name"]);
         $recipe->setImageHasFace($imageData["hasFace"]);
-        $recipe->setEnabled(true);
+        $recipe->setBanned(false);
         $recipe->setCrawled(new \DateTime("now"));
         $recipe->setBlog($blog);
         return $recipe;
