@@ -4,6 +4,7 @@
 /public/bundles/
 /public/images/recipes
 /var/
+/config/packages/security.yaml
 #/vendor/
 ###< symfony/framework-bundle ###
 
