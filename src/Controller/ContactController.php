@@ -44,7 +44,7 @@ class ContactController extends Controller {
 
             $mailSent = true;
             $mailSuccess = mail(
-                "r.kaehlert@skalium.de",
+                "kontakt@findevegan.de",
                 "Anfrage Blog-Registrierung: " . $contactFormData["name"],
                 $message,
                 implode("\r\n", $headerFields)
