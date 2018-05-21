@@ -24,7 +24,7 @@ class RecipeRepository extends ServiceEntityRepository {
         return $this->createQueryBuilder('r')
             ->join('r.blog', 'b')
             ->leftJoin('r.categories', 'c')
-            ->where('r.imageHasFace = 0')
+            //->where('r.imageHasFace = 0')
             ->andWhere('b.enabled = 1')
             ->andWhere('r.banned != ' . Recipe::$BANNED_OPTIONS["BANNED"])
             ->andWhere('r.image IS NOT NULL')
