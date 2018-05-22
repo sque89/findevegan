@@ -179,7 +179,7 @@ class Blog
 
     public function getEnabledRecipes() {
         return $this->getRecipes()->filter(function (Recipe $recipe) {
-            return $recipe->getEnabled();
+            return $recipe->getBanned() === false;
         });
     }
 
