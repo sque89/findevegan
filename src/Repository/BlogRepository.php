@@ -46,6 +46,7 @@ class BlogRepository extends ServiceEntityRepository
             ->select('count(r.id) as count, b.title, b.slug')
             ->where('DATE_DIFF(CURRENT_TIMESTAMP(), r.released) < 30')
             ->groupBy('b.id')
+            ->orderBy('count', 'DESC')
             ->setMaxResults(10)
             ->getQuery()
             ->getResult();
