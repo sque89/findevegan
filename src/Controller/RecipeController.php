@@ -217,7 +217,8 @@ class RecipeController extends Controller {
             'form' => $form->createView(),
             'sent' => $sent,
             'success' => $success,
-            'found' => $recipe
+            'found' => $recipe,
+            'recipe' => $recipe
         ]);
     }
 

@@ -2,7 +2,7 @@
     {% for blog in blogs %}
             <a href="{{path('blog', {'blogSlug': blog.slug})}}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 {{blog.title}}
-                <span class="badge badge-primary badge-pill">{{blog.count}}</span>
+                <span class="badge badge-primary badge-pill" title="{{blog.count}} vegane Rezepte im letzten Monat veröffentlicht">{{blog.count}}</span>
             </a>
     {% endfor %}
 </div>

@@ -10,14 +10,48 @@
                 {% elseif sent and not success  %}
                     <span class="text-danger">Leider ist ein Fehler bei der Übermittlung aufgetreten. Bitte versuche es später noch einmal. Vielen Dank!</span>
                 {% else %}
-                    <p>Bitte teile uns den Grund mit warum du dieses Rezept melden möchtest.</p>
+                    <p>Du möchtest das unten aufgeführte Rezept melden. Bitte melde dieses Rezept nur, wenn du einen driftigen Grund dafür hast und teile uns diesen Grund in unten stehendem Feld mit.</p>
+
+                    <div class="row py-3 mb-3 bg-secondary">
+                        <div class="col-12 col-md-6 offset-md-3">
+                            <div class="card my-2">
+                                <a class="text-primary" target="_blank">
+                                    <img class="card-img-top" src="/images/recipes/{{recipe.image}}.jpg" alt="{{recipe.title}}">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a class="text-primary" target="_blank">{{recipe.title}}</a>
+                                    </h5>
+                                    <p class="card-text">
+                                        von <a class="text-primary">{{recipe.blog.title}}</a>
+                                    </p>
+                                    {% if (recipe.categories|length > 0) %}
+                                        <p class="card-text">
+                                            {% for recipeCategory in recipe.categories %}
+                                                // <a href="#">
+                                                    {{recipeCategory.title}}
+                                                </a>
+                                            {% endfor %}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer d-flex justify-content-between">
+                                    <small class="text-muted">veröffentlicht am {{recipe.released|date("d.m.Y")}}</small>
+                                    <a class="text-primary" title="Rezept melden">
+                                        <span class="oi oi-bolt report-recipe"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{ form_start(form) }}
                     {{ form_widget(form) }}
                     <input class="btn btn-primary" type="submit" value="Rezept melden" />
                     {{ form_end(form) }}
                 {% endif %}
-                {% else %}
-                    <span>Das Rezept wurde nicht gefunden</span>
+            {% else %}
+                <span>Das Rezept wurde nicht gefunden</span>
             {% endif %}
         </div>
     </div>
