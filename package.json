@@ -9,10 +9,10 @@
   "private": true,
   "scripts": {
     "sass": "node-sass -w ./assets/sass/styles.scss -o ./public/css/",
+    "build": "gulp && node-sass ./assets/sass/styles.scss -o ./public/css/",
     "dev-server": "encore dev-server",
     "dev": "encore dev",
-    "watch": "encore dev --watch",
-    "build": "encore production"
+    "watch": "encore dev --watch"
   },
   "name": "findevegan",
   "version": "1.0.0",

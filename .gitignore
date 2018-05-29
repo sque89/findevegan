@@ -1,16 +1,18 @@
-
 ###> symfony/framework-bundle ###
 /.env
 /public/bundles/
-/public/images/recipes/
+/public/css/
+/public/fonts/
+/public/images/
+/public/js/
 /var/
 /config/packages/security.yaml
 /src/Migrations/
-#/vendor/
+/vendor/
 ###< symfony/framework-bundle ###
 
 ###> symfony/webpack-encore-pack ###
-#/node_modules/
+/node_modules/
 /public/build/
 ###< symfony/webpack-encore-pack ###
 
