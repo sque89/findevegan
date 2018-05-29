@@ -5,6 +5,7 @@
 /public/fonts/
 /public/images/
 /public/js/
+/public/favicon.ico
 /var/
 /config/packages/security.yaml
 /src/Migrations/
