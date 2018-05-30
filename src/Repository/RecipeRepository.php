@@ -122,6 +122,13 @@ class RecipeRepository extends ServiceEntityRepository {
             ->getOneOrNullResult();
     }
 
+    public function findByBannedStatusIsPending() {
+        return $this->getBasicQueryBuilder()
+            ->where('r.banned = ' . Recipe::$BANNED_OPTIONS['BAN_PROPOSED'])
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findRecipeListForCriterias($page = 1, $categorySlug = null, $blogSlug = null, $term = null) {
         $queryBuilder = $this->getBasicQueryBuilder();
         if ($categorySlug) {

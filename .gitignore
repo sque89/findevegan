@@ -1,11 +1,15 @@
 ###> symfony/framework-bundle ###
 /.env
+/public/usage
 /public/bundles/
 /public/css/
 /public/fonts/
 /public/images/
 /public/js/
 /public/favicon.ico
+/public/auto-deploy/config.php
+/public/auto-deploy/deploy.log
+
 /var/
 /config/packages/security.yaml
 /src/Migrations/
