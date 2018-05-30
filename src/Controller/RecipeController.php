@@ -63,7 +63,7 @@ class RecipeController extends Controller {
     }
 
     private function getPageTextElements($page = 1, $category = null, $blog = null, $term = null) {
-        $title = "Die aktuellsten veganen Rezepte";
+        $title = "Die aktuellsten Veganen Rezepte";
         $searchfieldPlaceholder = "Suchbegriff z.B. Nudeln";
         $breadcrumb = [];
 
