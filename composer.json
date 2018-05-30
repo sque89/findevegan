@@ -66,6 +66,13 @@
         "symfony/polyfill-php56": "*"
     },
     "scripts": {
+        "build": {
+            "vendor:delete": "rm -rf vendor node_modules",
+            "vendor:install": "composer install && npm install",
+            "cache:clear": "php bin/console cache:clear --no-warmup",
+            "cache:warmup": "php bin/console cache:warmup",
+            "gulp": "gulp"
+        },
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install --symlink --relative %PUBLIC_DIR%": "symfony-cmd",
