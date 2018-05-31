@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="shortcut icon" type="image/x-icon" href="/images/misc/favicon.ico">
+        {% block stylesheets %}
+            <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}
+            <nav class="navbar navbar-expand-lg bg-secondary">
+                <div class="container">
+                    <a class="navbar-brand" href="{{path('latest')}}">
+                        <img src="/images/misc/banner.png" class="d-inline-block align-top" alt="findevegan.de">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Bedienen des Menüs">
+                        <span class="oi oi-menu"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="main-menu">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link font-weight-bold" href="{{path('reportings')}}">Meldungen</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        {% endblock %}
+        <div class="container py-3">
+            <h1 class="mb-3">Gemeldete Rezepte prüfen</h1>
+            {% for recipe in recipes %}
+                <div class="row">
+                    <div class="col-md-12 text-left">
+                        <div class="card flex-md-row mb-4 box-shadow h-md-250">
+                            <div class="card-body">
+                                <a href="//{{recipe.permalink}}" class="h2 h5 mb-4 d-block" target="_blank">{{recipe.title}}</a>
+                                <a href="{{path('reportingsApprove', {approveRecipeId: recipe.id})}}" class="btn btn-primary">Meldung bestätigen</a>
+                                <a href="{{path('reportingsDeny', {denyRecipeId: recipe.id})}}" class="btn btn-primary">Meldung entfernen</a>
+                            </div>
+                            <img src="/images/recipes/{{recipe.image}}.jpg" />
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% block javascripts %}
+            <script src="/js/jquery/jquery.min.js"></script>
+            <script src="/js/bootstrap/bootstrap.min.js"></script>
+        {% endblock %}
+    </body>
+</html>
