@@ -177,9 +177,15 @@ class Blog
         return $this->recipes;
     }
 
-    public function getEnabledRecipes() {
+    public function getValidRecipes() {
         return $this->getRecipes()->filter(function (Recipe $recipe) {
-            return $recipe->getBanned() === Recipe::$BANNED_OPTIONS["UNBANNED"];
+            return $recipe->getBanned() === Recipe::$BANNED_OPTIONS["UNBANNED"] && $recipe->getImage() !== NULL;
+        });
+    }
+
+    public function getRecipesWithoutImage() {
+        return $this->getRecipes()->filter(function (Recipe $recipe) {
+            return $recipe->getImage() === NULL;
         });
     }
 

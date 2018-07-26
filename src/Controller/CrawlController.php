@@ -28,10 +28,10 @@ class CrawlController extends AbstractController {
             $alreadyExistingRecipe = $recipeRepository->findOneByPermalink($newRecipe->getPermalink());
             if ($alreadyExistingRecipe) {
                 // Wenn alle Rezpete erneut gecrawlt werden sollen
-                if ($continueOnDuplicate === 'true') {
+                if ($continueOnDuplicate === true) {
                     if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage()) {
                         unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
-                    } else {
+                    } else if($newRecipe->getImage()) {
                         $alreadyExistingRecipe->setImage($newRecipe->getImage());
                     }
                 } else {
@@ -48,7 +48,7 @@ class CrawlController extends AbstractController {
     }
 
     /**
-     * continueOnDuplicate - wenn gesetzt wird nach bereits vorhandenem Rezept nicht gestoppt
+     * @param continueOnDuplicate - wenn gesetzt wird nach bereits vorhandenem Rezept nicht gestoppt
      * @Route("/crawl/{id}", name="crawlSingle")
      */
     public function single(Request $request, $id) {
