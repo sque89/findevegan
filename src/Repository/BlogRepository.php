@@ -14,14 +14,18 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class BlogRepository extends ServiceEntityRepository
 {
-    public function __construct(RegistryInterface $registry)
-    {
+    public function __construct(RegistryInterface $registry) {
         parent::__construct($registry, Blog::class);
     }
 
     private function getBasicQueryBuilder() {
         return $this->createQueryBuilder('b')
-                ->where('b.enabled = 1');
+                ->where('b.enabled = 1')
+                ->orderBy('b.title');
+    }
+
+    public function findAll() {
+        return $this->getBasicQueryBuilder()->getQuery()->getResult();
     }
 
     public function findBlogsByFirstLetter(string $letter) {

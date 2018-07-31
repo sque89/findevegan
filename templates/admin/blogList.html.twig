@@ -1,0 +1,28 @@
+{% extends '/admin/admin.html.twig' %}
+
+{% block main %}
+    <table class="table-striped text-center">
+        <thead>
+            <tr>
+                <th class="p-2">Blogname</th>
+                <th class="p-2 border-left border-primary">Rezepte</th>
+                <th class="p-2 border-left border-primary">ohne Bild</th>
+                <th class="p-2">Anteil</th>
+                <th class="p-2 border-left border-primary">ohne Bilddatei</th>
+                <th class="p-2">Anteil</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for blog in blogs %}
+                <tr>
+                    <td class="p-2 text-left">{{blog.blog.title}}</td>
+                    <td class="p-2 border-left border-primary">{{blog.blog.getRecipes() | length}}</td>
+                    <td class="p-2 border-left border-primary">{{(blog.blog.getRecipesWithoutImage() | length)}}</td>
+                    <td class="p-2">{{((blog.blog.recipes | length) > 0 ? (blog.blog.getRecipesWithoutImage() | length) / (blog.blog.getRecipes() | length) * 100 : 0) | number_format(1, ',', '.')}} %</td>
+                    <td class="p-2 border-left border-primary">{{(blog.missingImageFileCount)}}</td>
+                    <td class="p-2">{{((blog.missingImageFileCount) > 0 ? (blog.missingImageFileCount) / (blog.blog.getRecipes() | length) * 100 : 0) | number_format(1, ',', '.')}} %</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
