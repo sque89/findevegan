@@ -1,0 +1,7 @@
+<ul class="list-inline" id="mobileCategoryList">
+    {% for letter in letters %}
+        <li class="list-inline-item">
+            <a href="{{path('blogsStartWithLetter', {firstLetter: letter})}}" class="badge badge-primary p-2 mb-2">{{letter}}</a>
+        </li>
+    {% endfor %}
+</ul>

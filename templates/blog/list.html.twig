@@ -2,6 +2,11 @@
 
 {% block body %}
     <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                {{ render(controller('App\\Controller\\BlogController::letterSelection')) }}
+            </div>
+        </div>
         <div class="row mb-3">
             <div class="col-12 text-center">
                 <h1>{{pageTitle}}</h1>
