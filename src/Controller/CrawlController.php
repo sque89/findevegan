@@ -29,7 +29,7 @@ class CrawlController extends AbstractController {
             if ($alreadyExistingRecipe) {
                 // Wenn alle Rezpete erneut gecrawlt werden sollen
                 if ($continueOnDuplicate === true) {
-                    if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage()) {
+                    if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage() && file_exists('images/recipes/' . $alreadyExistingRecipe->getImage() . ".jpg")) {
                         unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
                     } else if($newRecipe->getImage()) {
                         $alreadyExistingRecipe->setImage($newRecipe->getImage());

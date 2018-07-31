@@ -77,9 +77,11 @@ class CrawlService {
             if ($imageHasFace) {
                 $returnValue["hasFace"] = true;
             }
+            unlink($originImagePath);
+            return $returnValue;
+        } else {
+            throw new \Exception("Image too small");
         }
-        unlink($originImagePath);
-        return $returnValue;
     }
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
