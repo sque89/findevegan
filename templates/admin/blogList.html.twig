@@ -4,6 +4,7 @@
     <table class="table-striped text-center">
         <thead>
             <tr>
+                <th class="p-2">ID</th>
                 <th class="p-2">Blogname</th>
                 <th class="p-2">Rezepte</th>
                 <th class="p-2">ohne Bild</th>
@@ -18,6 +19,9 @@
                 {%set percentageWithoutImage = ((blog.blog.recipes | length) > 0 ? (blog.blog.getRecipesWithoutImage() | length) / (blog.blog.getRecipes() | length) * 100 : 0) %}
                 {%set percentageWithoutImageFile = ((blog.missingImageFileCount) > 0 ? (blog.missingImageFileCount) / (blog.blog.getRecipes() | length) * 100 : 0) %}
                 <tr>
+                    <td class="p-2 text-left">
+                        {{blog.blog.id}}
+                    </td>
                     <td class="p-2 text-left">
                         {{blog.blog.title}}
                     </td>
