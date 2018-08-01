@@ -34,7 +34,10 @@ class AdminController extends Controller {
         $blogList = [];
 
         foreach($blogs as $blog) {
-            $blogList[] = array("blog" => $blog, "missingImageFileCount" => $this->getMissingImageFilesForBlog($blog));
+            $blogList[] = array(
+                "blog" => $blog,
+                "missingImageFileCount" => $this->getMissingImageFilesForBlog($blog),
+                "crawlSuccess" => $blog->getLatestSuccessfulCrawl() && $blog->getLatestSuccessfulCrawl()->diff(new \DateTimeImmutable())->d <= 2);
         }
 
         return $this->render('admin/blogList.html.twig', [

@@ -61,6 +61,11 @@ class Blog
     private $enabled;
 
     /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $latestSuccessfulCrawl;
+
+    /**
      * One Blog has Many Recipes.
      * @ORM\OneToMany(targetEntity="Recipe", mappedBy="blog")
      */
@@ -170,6 +175,15 @@ class Blog
     {
         $this->enabled = $enabled;
 
+        return $this;
+    }
+
+    public function getLatestSuccessfulCrawl(): ?\DateTimeImmutable {
+        return $this->latestSuccessfulCrawl;
+    }
+
+    public function setLatestSuccessfulCrawl(?\DateTimeImmutable $latestSuccessfulCrawl): self {
+        $this->latestSuccessfulCrawl = $latestSuccessfulCrawl;
         return $this;
     }
 

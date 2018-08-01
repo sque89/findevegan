@@ -31,14 +31,14 @@ class CrawlController extends AbstractController {
                 if ($continueOnDuplicate === true) {
                     if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage() && file_exists('images/recipes/' . $alreadyExistingRecipe->getImage() . ".jpg")) {
                         unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
-                    } else if($newRecipe->getImage()) {
+                    } else if ($newRecipe->getImage()) {
                         $alreadyExistingRecipe->setImage($newRecipe->getImage());
                     }
                 } else {
                     if ($newRecipe->getImage()) {
                         unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
                     }
-                    throw new \Exception("Vorhandenes Rezept erreicht");
+                    throw new \Exception("Vorhandenes Rezept erreicht", 0);
                 }
             } else {
                 $this->entityManager->persist($newRecipe);
@@ -66,8 +66,13 @@ class CrawlController extends AbstractController {
                     $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?paged=' . ++$currentPage));
                 }
             } catch (\Exception $exception) {
-                echo $exception->getMessage();
-                echo "Blog nicht gefunden oder Ende erreicht";
+                if ($exception->getCode() === 0) {
+                    $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
+                    $this->entityManager->flush();
+                } else {
+                    echo $exception->getMessage();
+                    echo "Blog nicht erreichbar";
+                }
             }
         } else if ($blog->getType() === "blogspot") {
             try {
@@ -86,7 +91,13 @@ class CrawlController extends AbstractController {
 
                 $this->crawlRecipeList($recipeItems, $blog, $request->query->get("continueOnDuplicate", false));
             } catch (Exception $exception) {
-                echo "Blog nicht gefunden oder Ende erreicht";
+                if ($exception->getCode() === 0) {
+                    $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
+                    $this->entityManager->flush();
+                } else {
+                    echo $exception->getMessage();
+                    echo "Blog nicht erreichbar";
+                }
             }
         } else if ($this->blogtype == "wix") {
             $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
