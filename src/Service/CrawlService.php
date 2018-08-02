@@ -1,6 +1,8 @@
 <?php
-
 namespace App\Service;
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 use Symfony\Component\DomCrawler\Crawler;
 use App\Repository\RecipeCategoryRepository;
@@ -59,58 +61,60 @@ class CrawlService {
         return $alreadySet;
     }
 
-    private function checkAndStoreImage($path) {
+    private function checkAndCreateImage($path) {
         $name = $this->generateImageId();
         $returnValue = array(
             "name" => $name,
-            "hasFace" => false
+            "hasFace" => false,
+            "image" => null
         );
-        $originImagePath = "images/recipes/temp/org_" . $name . ".jpg";
-        $thumbImagePath = "images/recipes/" . $name . ".jpg";
-        $image = new SimpleImage($path);
-        if ($image->getWidth() >= 400) {
-            $image->toFile($originImagePath, "image/jpeg", 100);
-            $image->thumbnail(400, 320);
-            $image->toFile($thumbImagePath, "image/jpeg", 80);
-            $imageHasFace = $this->faceDetector->faceDetect($originImagePath) || $this->faceDetector->faceDetect($thumbImagePath);
 
-            if ($imageHasFace) {
-                $returnValue["hasFace"] = true;
-            }
-            unlink($originImagePath);
+        $image = new SimpleImage($path);
+        //TODO 300 oder 400?
+        if ($image->getWidth() >= 300) {
+            @$returnValue["hasFace"] = $this->faceDetector->faceDetect($image->toString('image/jpeg'));
+            $returnValue["image"] = $image;
             return $returnValue;
         } else {
             throw new \Exception("Image too small");
         }
     }
 
-    public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
-        $recipe = new Recipe();
-        $imageData = $this->parseImage($recipeNode->text());
-        $recipe->setTitle($this->parseTitle($recipeNode));
-        $recipe->setPermalink($this->parsePermalink($recipeNode));
-        $recipe->setReleased($this->parseReleaseDate($recipeNode));
-        $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
-        $recipe->setImage($imageData["name"]);
-        $recipe->setImageHasFace($imageData["hasFace"]);
-        $recipe->setBanned(false);
-        $recipe->setCrawled(new \DateTime("now"));
-        $recipe->setBlog($blog);
-        return $recipe;
+    private function storeSimpleImage($name, $image) {
+        $thumbImagePath = "images/recipes/" . $name . ".jpg";
+        $image->thumbnail(400, 320);
+        $image->toFile($thumbImagePath, "image/jpeg", 80);
     }
 
-    public function parseRecipeCategories(Crawler $categoryNodes): Array {
-        $recipeCategories = [];
-        $categoryNodes->each(function(Crawler $categoryNode) use (&$recipeCategories) {
-            $category = $this->recipeCategoryRepository->findOneBySlugOrAlternative(strtolower($categoryNode->text()));
-            if ($category && !$this->categoryAlreadySetForRecipe($category, $recipeCategories)) {
-                $recipeCategories[] = $category;
+    private function parseImage(string $nodeContent) {
+        $matches = [];
+        preg_match_all($this->IMAGE_PATTERN, $nodeContent, $matches);
+        $imageDataToReturn = array("name" => null, "hasFace" => false, "image" => null);
+
+        foreach ($matches[0] as $match) {
+            if (!$this->pathIsInvalidBecauseOfPathSegment($match)) {
+                try {
+                    $imageDataToReturn = $this->checkAndCreateImage($match);
+                } catch (\Exception $e) {
+                    echo "parseImage: " . $e->getMessage() . '<br />';
+                    try {
+                        $imageDataToReturn = $this->checkAndCreateImage(str_replace("https", "http", $match));
+                    } catch (\Exception $ex) {
+                        echo "parseImage: " . $e->getMessage() . '<br />';
+                        continue;
+                    }
+                }
             }
-        });
-        return $recipeCategories;
+        }
+
+        if ($imageDataToReturn["image"]) {
+            $this->storeSimpleImage($imageDataToReturn["name"], $imageDataToReturn["image"]);
+        }
+
+        return $imageDataToReturn;
     }
 
-    public function parseTitle(Crawler $recipeNode) {
+    private function parseTitle(Crawler $recipeNode) {
         if ($recipeNode->filter('title')->count() > 0) {
             return $recipeNode->filter('title')->first()->text();
         } else if ($recipeNode->filterXPath('//default:title')->count() > 0) {
@@ -118,7 +122,7 @@ class CrawlService {
         }
     }
 
-    public function parsePermalink(Crawler $recipeNode) {
+    public static function parsePermalink(Crawler $recipeNode) {
         $link = null;
 
         if ($recipeNode->filter('link')->count() > 0) {
@@ -141,33 +145,7 @@ class CrawlService {
         }
     }
 
-    public function parseImage(string $nodeContent) {
-        $matches = [];
-        preg_match_all($this->IMAGE_PATTERN, $nodeContent, $matches);
-
-        foreach ($matches[0] as $match) {
-            if (!$this->pathIsInvalidBecauseOfPathSegment($match)) {
-                try {
-                    return $this->checkAndStoreImage($match);
-                } catch (\Exception $e) {
-                    //echo $e->getMessage(). "<br />";
-                    try {
-                        return $this->checkAndStoreImage(str_replace("https", "http", $match));
-                    } catch (\Exception $ex) {
-                        //echo $e->getMessage(). "<br />";
-                        continue;
-                    }
-                }
-            }
-        }
-
-        return array(
-            "name" => null,
-            "hasFace" => false
-        );
-    }
-
-    public function parseReleaseDate(Crawler $itemNode): \DateTime {
+    private function parseReleaseDate(Crawler $itemNode): \DateTime {
         $releasedDate = null;
         if ($itemNode->filterXPath("//published")->count() >= 1) {
             $releasedDate = new \DateTime($itemNode->filter("//published")->first()->text());
@@ -181,4 +159,29 @@ class CrawlService {
         return $releasedDate;
     }
 
+    private function parseRecipeCategories(Crawler $categoryNodes): Array {
+        $recipeCategories = [];
+        $categoryNodes->each(function(Crawler $categoryNode) use (&$recipeCategories) {
+            $category = $this->recipeCategoryRepository->findOneBySlugOrAlternative(strtolower($categoryNode->text()));
+            if ($category && !$this->categoryAlreadySetForRecipe($category, $recipeCategories)) {
+                $recipeCategories[] = $category;
+            }
+        });
+        return $recipeCategories;
+    }
+
+    public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
+        $recipe = new Recipe();
+        $imageData = $this->parseImage($recipeNode->text());
+        $recipe->setTitle($this->parseTitle($recipeNode));
+        $recipe->setPermalink($this->parsePermalink($recipeNode));
+        $recipe->setReleased($this->parseReleaseDate($recipeNode));
+        $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
+        $recipe->setImage($imageData["name"]);
+        $recipe->setImageHasFace($imageData["hasFace"]);
+        $recipe->setBanned(false);
+        $recipe->setCrawled(new \DateTime("now"));
+        $recipe->setBlog($blog);
+        return $recipe;
+    }
 }

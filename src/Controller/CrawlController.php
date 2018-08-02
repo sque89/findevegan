@@ -24,31 +24,67 @@ class CrawlController extends AbstractController {
     private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $continueOnDuplicate) {
         $recipeRepository = $this->entityManager->getRepository(Recipe::class);
         foreach ($recipeList as $recipeNode) {
-            $newRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
-            $alreadyExistingRecipe = $recipeRepository->findOneByPermalink($newRecipe->getPermalink());
-            if ($alreadyExistingRecipe) {
-                // Wenn alle Rezpete erneut gecrawlt werden sollen
-                if ($continueOnDuplicate === true) {
-                    if ($alreadyExistingRecipe->getImage() && $newRecipe->getImage() && file_exists('images/recipes/' . $alreadyExistingRecipe->getImage() . ".jpg")) {
-                        unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
-                    } else if ($newRecipe->getImage()) {
-                        $alreadyExistingRecipe->setImage($newRecipe->getImage());
-                    }
-                } else {
-                    if ($newRecipe->getImage()) {
-                        unlink('images/recipes/' . $newRecipe->getImage() . ".jpg");
-                    }
-                    throw new \Exception("Vorhandenes Rezept erreicht", 0);
+            $existingRecipe = $recipeRepository->findOneByPermalink(CrawlService::parsePermalink(new Crawler($recipeNode)));
+            if ($existingRecipe && $continueOnDuplicate === true) {
+                $recipeDataForExistingRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
+                if ($recipeDataForExistingRecipe->getImage()) {
+                    $existingRecipe->setImage($recipeDataForExistingRecipe->getImage());
+                    $this->entityManager->flush();
                 }
-            } else {
+            } else if (!$existingRecipe) {
+                $newRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                 $this->entityManager->persist($newRecipe);
+                $this->entityManager->flush();
+            } else {
+                echo "Vorhandenes Rezept erreicht<br />";
+                return false;
             }
+        }
+        return true;
+    }
+
+    private function crawlWordpressBlog($blog, $updateAllImages) {
+        $currentPage = 1;
+        try {
+            $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
+            while ($pageCrawler->filter('item')->count() > 0) {
+                if (!$this->crawlRecipeList($pageCrawler->filter('item'), $blog, $updateAllImages)) {
+                    break;
+                }
+                $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?paged=' . ++$currentPage));
+            }
+            $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
             $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            echo "crawlSingle: " . $exception->getMessage() . "<br />";
+        }
+    }
+
+    private function crawlBlogspotBlog($blog, $updateAllImages) {
+        try {
+            $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . "?max-results=99999"));
+            $recipeItems = null;
+
+            if ($pageCrawler->filterXPath('//item')->count() > 0) {
+                $recipeItems = $pageCrawler->filterXPath('//item');
+            } else if ($pageCrawler->filterXPath('//entry')->count() > 0) {
+                $recipeItems = $pageCrawler->filterXPath('//entry');
+            } else if ($pageCrawler->filterXPath('//default:item')->count() > 0) {
+                $recipeItems = $pageCrawler->filterXPath('//default:item');
+            } else if ($pageCrawler->filterXPath('//default:entry')->count() > 0) {
+                $recipeItems = $pageCrawler->filterXPath('//default:entry');
+            }
+
+            $this->crawlRecipeList($recipeItems, $blog, $updateAllImages);
+            $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
+            $this->entityManager->flush();
+        } catch (\Exception $exception) {
+            echo "crawlSingle: " . $exception->getMessage() . "<br />";
         }
     }
 
     /**
-     * @param continueOnDuplicate - wenn gesetzt wird nach bereits vorhandenem Rezept nicht gestoppt
+     * @param updateAllImages - wenn gesetzt wird nach bereits vorhandenem Rezept nicht gestoppt und die Bilder aller Rezepte aktualisiert
      * @Route("/crawl/{id}", name="crawlSingle")
      */
     public function single(Request $request, $id) {
@@ -56,49 +92,9 @@ class CrawlController extends AbstractController {
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
 
         if ($blog->getType() === "wordpress") {
-            $currentPage = 1;
-
-            try {
-                $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
-                while ($pageCrawler->filter('item')->count() > 0) {
-                    // Nicht abbrechbare each schleife keine option, da dann blogspot immer komplett gecrawlt wird
-                    $this->crawlRecipeList($pageCrawler->filter('item'), $blog, $request->query->get("continueOnDuplicate", false));
-                    $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?paged=' . ++$currentPage));
-                }
-            } catch (\Exception $exception) {
-                if ($exception->getCode() === 0) {
-                    $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
-                    $this->entityManager->flush();
-                } else {
-                    echo $exception->getMessage();
-                    echo "Blog nicht erreichbar";
-                }
-            }
+            $this->crawlWordpressBlog($blog, $request->query->get("updateAllImages", false));
         } else if ($blog->getType() === "blogspot") {
-            try {
-                $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . "?max-results=99999"));
-                $recipeItems = null;
-
-                if ($pageCrawler->filterXPath('//item')->count() > 0) {
-                    $recipeItems = $pageCrawler->filterXPath('//item');
-                } else if ($pageCrawler->filterXPath('//entry')->count() > 0) {
-                    $recipeItems = $pageCrawler->filterXPath('//entry');
-                } else if ($pageCrawler->filterXPath('//default:item')->count() > 0) {
-                    $recipeItems = $pageCrawler->filterXPath('//default:item');
-                } else if ($pageCrawler->filterXPath('//default:entry')->count() > 0) {
-                    $recipeItems = $pageCrawler->filterXPath('//default:entry');
-                }
-
-                $this->crawlRecipeList($recipeItems, $blog, $request->query->get("continueOnDuplicate", false));
-            } catch (Exception $exception) {
-                if ($exception->getCode() === 0) {
-                    $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
-                    $this->entityManager->flush();
-                } else {
-                    echo $exception->getMessage();
-                    echo "Blog nicht erreichbar";
-                }
-            }
+            $this->crawlBlogspotBlog($blog, $request->query->get("updateAllImages", false));
         } else if ($this->blogtype == "wix") {
             $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
             $pageCrawler->each(function(Crawler $recipeNode) use ($blog, $crawlService, $entityManager) {

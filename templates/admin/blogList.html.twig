@@ -41,7 +41,7 @@
                         {{percentageWithoutImageFile | number_format(1, ',', '.')}} %
                     </td>
                     <td class="p-2 {{blog.crawlSuccess ? 'bg-success' : 'bg-danger'}}">
-                        {{blog.blog.getLatestSuccessfulCrawl ? blog.blog.getLatestSuccessfulCrawl | date('d.m.Y') : '-'}}
+                        {{blog.blog.getLatestSuccessfulCrawl ? blog.blog.getLatestSuccessfulCrawl | date('d.m.Y m:h') : '-'}}
                     </td>
                 </tr>
             {% endfor %}
