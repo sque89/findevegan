@@ -95,10 +95,12 @@ class CrawlService {
             if (!$this->pathIsInvalidBecauseOfPathSegment($match)) {
                 try {
                     $imageDataToReturn = $this->checkAndCreateImage($match);
+                    break;
                 } catch (\Exception $e) {
                     echo "parseImage: " . $e->getMessage() . '<br />';
                     try {
                         $imageDataToReturn = $this->checkAndCreateImage(str_replace("https", "http", $match));
+                        break;
                     } catch (\Exception $ex) {
                         echo "parseImage: " . $e->getMessage() . '<br />';
                         continue;

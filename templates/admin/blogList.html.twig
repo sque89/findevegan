@@ -28,16 +28,16 @@
                     <td class="p-2 {{(blog.blog.getRecipes() | length) > 0 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getRecipes() | length}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImage <= 10 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getRecipesWithoutImage() | length}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImage <= 10 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{percentageWithoutImage | number_format(1, ',', '.')}} %
                     </td>
-                    <td class="p-2 {{percentageWithoutImageFile <= 10 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.missingImageFileCount}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImageFile <= 10 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{percentageWithoutImageFile | number_format(1, ',', '.')}} %
                     </td>
                     <td class="p-2 {{blog.crawlSuccess ? 'bg-success' : 'bg-danger'}}">
