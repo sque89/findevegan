@@ -4,20 +4,55 @@
     <table class="table-striped text-center table-bordered">
         <thead>
             <tr>
-                <th class="p-2">ID</th>
-                <th class="p-2">Blogname</th>
-                <th class="p-2">Rezepte</th>
-                <th class="p-2">ohne Bild</th>
-                <th class="p-2">Anteil</th>
-                <th class="p-2">ohne Bilddatei</th>
-                <th class="p-2">Anteil</th>
-                <th class="p-2">Crawl erfolgreich</th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'id', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Id
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'title', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Blogname
+                    </a>
+                </th>
+                <th class="p-2">Feed</th>
+                <th class="p-2">Blog</th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'recipeCount', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Rezepte
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'withoutImage', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        ohne Bild
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'withoutImagePercentage', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Anteil
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'withoutImageFile', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        ohne Bilddatei
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'withoutImageFilePercentage', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Anteil
+                    </a>
+                </th>
+                <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'crawlSuccess', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Crawl erfolgreich
+                    </a>
+                </th>
+                <th>
+                    Aktionen
+                </th>
             </tr>
         </thead>
         <tbody>
             {% for blog in blogs %}
-                {%set percentageWithoutImage = ((blog.blog.recipes | length) > 0 ? (blog.blog.getRecipesWithoutImage() | length) / (blog.blog.getRecipes() | length) * 100 : 0) %}
-                {%set percentageWithoutImageFile = ((blog.missingImageFileCount) > 0 ? (blog.missingImageFileCount) / (blog.blog.getRecipes() | length) * 100 : 0) %}
                 <tr>
                     <td class="p-2 text-left">
                         {{blog.blog.id}}
@@ -25,23 +60,32 @@
                     <td class="p-2 text-left">
                         {{blog.blog.title}}
                     </td>
+                    <td class="p-2 text-left">
+                        <a href="{{blog.blog.url}}" target="_blank">zum Blog</a>
+                    </td>
+                    <td class="p-2 text-left">
+                        <a href="{{blog.blog.feed}}" target="_blank">zum Feed</a>
+                    </td>
                     <td class="p-2 {{(blog.blog.getRecipes() | length) > 0 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getRecipes() | length}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{blog.percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getRecipesWithoutImage() | length}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
-                        {{percentageWithoutImage | number_format(1, ',', '.')}} %
+                    <td class="p-2 {{blog.percentageWithoutImage <= 5 ? 'bg-success' : 'bg-danger'}}">
+                        {{blog.percentageWithoutImage | number_format(1, ',', '.')}} %
                     </td>
-                    <td class="p-2 {{percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
+                    <td class="p-2 {{blog.percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.missingImageFileCount}}
                     </td>
-                    <td class="p-2 {{percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
-                        {{percentageWithoutImageFile | number_format(1, ',', '.')}} %
+                    <td class="p-2 {{blog.percentageWithoutImageFile <= 5 ? 'bg-success' : 'bg-danger'}}">
+                        {{blog.percentageWithoutImageFile | number_format(1, ',', '.')}} %
                     </td>
                     <td class="p-2 {{blog.crawlSuccess ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getLatestSuccessfulCrawl ? blog.blog.getLatestSuccessfulCrawl | date('d.m.Y m:h') : '-'}}
+                    </td>
+                    <td class="p-2">
+                        <a class="btn btn-primary" href="{{path('crawlSingle', {id: blog.blog.id})}}" target="_blank">Crawl</a>
                     </td>
                 </tr>
             {% endfor %}

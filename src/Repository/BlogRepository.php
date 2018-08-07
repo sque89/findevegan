@@ -9,8 +9,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 /**
  * @method Blog|null find($id, $lockMode = null, $lockVersion = null)
  * @method Blog|null findOneBy(array $criteria, array $orderBy = null)
- * @method Blog[]    findAll()
- * @method Blog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Blog[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class BlogRepository extends ServiceEntityRepository
 {
@@ -20,18 +19,22 @@ class BlogRepository extends ServiceEntityRepository
 
     private function getBasicQueryBuilder() {
         return $this->createQueryBuilder('b')
-                ->where('b.enabled = 1')
-                ->orderBy('b.title');
+                ->where('b.enabled = 1');
     }
 
-    public function findAll() {
-        return $this->getBasicQueryBuilder()->getQuery()->getResult();
+    public function findAll($sort = null, $order = null) {
+        $basicQuery = $this->getBasicQueryBuilder();
+        if ($sort) {
+            $basicQuery->orderBy('b.' . $sort, $order);
+        }
+        return $basicQuery->getQuery()->getResult();
     }
 
     public function findBlogsByFirstLetter(string $letter) {
         $qb = $this->getBasicQueryBuilder();
         return $qb->add('where', $qb->expr()->eq($qb->expr()->lower($qb->expr()->substring('b.title', 1, 1)), ':letter'))
             ->setParameter('letter', $letter)
+            ->orderBy('b.title')
             ->getQuery()
             ->getResult();
     }
