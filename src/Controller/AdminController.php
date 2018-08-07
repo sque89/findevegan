@@ -16,7 +16,7 @@ class AdminController extends Controller {
         $this->em = $entitiyManager;
     }
 
-    private function getMissingImageFilesForBlog($blog) {
+    private function getMissingImageFileCountForBlog($blog) {
         $missingImageFiles = 0;
         foreach ($blog->getValidRecipes() as $recipe) {
             if (!file_exists("images/recipes/" . $recipe->getImage() . ".jpg")) {
@@ -27,21 +27,56 @@ class AdminController extends Controller {
     }
 
     /**
-     * @Route("/admin", name="blogList")
+     * @Route("/admin/{sortColumn}/{order}", name="blogList")
      */
-    public function blogList() {
+    public function blogList($sortColumn = 'id', $order = 'asc') {
         $blogs = $this->em->getRepository(Blog::class)->findAll();
         $blogList = [];
+        $missingImageFileCount = null;
 
-        foreach($blogs as $blog) {
+        foreach ($blogs as $blog) {
+            $missingImageFileCount = $this->getMissingImageFileCountForBlog($blog);
             $blogList[] = array(
                 "blog" => $blog,
-                "missingImageFileCount" => $this->getMissingImageFilesForBlog($blog),
-                "crawlSuccess" => $blog->getLatestSuccessfulCrawl() && $blog->getLatestSuccessfulCrawl()->diff(new \DateTimeImmutable())->d <= 2);
+                "missingImageFileCount" => $missingImageFileCount,
+                "crawlSuccess" => $blog->getLatestSuccessfulCrawl() && $blog->getLatestSuccessfulCrawl()->diff(new \DateTimeImmutable())->d <= 2,
+                "percentageWithoutImage" => count($blog->getRecipes()) > 0 ? count($blog->getRecipesWithoutImage()) / count($blog->getRecipes()) * 100 : 0,
+                "percentageWithoutImageFile" => $missingImageFileCount > 0 ? $missingImageFileCount / count($blog->getValidRecipes()) * 100 : 0
+            );
         }
 
+        usort($blogList, function ($a, $b) use ($sortColumn, $order) {
+            switch ($sortColumn) {
+                case 'id': return ($order === 'asc' ? 1 : -1) * ($a["blog"]->getId() - $b["blog"]->getId());
+                    break;
+                case 'title': return ($order === 'asc' ? 1 : -1) * strcasecmp($a["blog"]->getTitle(), $b["blog"]->getTitle());
+                    break;
+                case 'recipeCount': return ($order === 'asc' ? 1 : -1) * (count($a["blog"]->getRecipes()) - count($b["blog"]->getRecipes()));
+                    break;
+                case 'withoutImage': return ($order === 'asc' ? 1 : -1) * (count($a["blog"]->getRecipesWithoutImage()) - count($b["blog"]->getRecipesWithoutImage()));
+                    break;
+                case 'withoutImageFile': return ($order === 'asc' ? 1 : -1) * ($a["missingImageFileCount"] - $b["missingImageFileCount"]);
+                    break;
+                case 'withoutImagePercentage': return ($order === 'asc' ? 1 : -1) * ($a["percentageWithoutImage"] - $b["percentageWithoutImage"]);
+                    break;
+                case 'withoutImageFilePercentage': return ($order === 'asc' ? 1 : -1) * ($a["percentageWithoutImageFile"] - $b["percentageWithoutImageFile"]);
+                    break;
+                case 'crawlSuccess':
+                    if ($a["blog"]->getLatestSuccessfulCrawl() === null) {
+                        return ($order === 'asc' ? 1 : -1) * -1;
+                    } else if ($b["blog"]->getLatestSuccessfulCrawl() === null) {
+                        return ($order === 'asc' ? 1 : -1) * 1;
+                    } else {
+                        return ($order === 'asc' ? 1 : -1) * ($a["blog"]->getLatestSuccessfulCrawl() <=> $b["blog"]->getLatestSuccessfulCrawl());
+                    }
+                    break;
+            }
+        });
+
         return $this->render('admin/blogList.html.twig', [
-            'blogs' => $blogList
+                    'blogs' => $blogList,
+                    'currentSort' => $sortColumn,
+                    'currentOrder' => $order,
         ]);
     }
 
@@ -67,4 +102,5 @@ class AdminController extends Controller {
                     'recipes' => $reportedRecipes
         ]);
     }
+
 }
