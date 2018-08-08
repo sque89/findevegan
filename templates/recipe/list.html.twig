@@ -66,12 +66,12 @@
             <div class="card-deck">
                 {% for recipe in recipeRow %}
                     <div class="card my-2">
-                        <a href="http://{{recipe.permalink}}" target="_blank">
+                        <a href="{{recipe.getLink}}" target="_blank">
                             <img class="card-img-top" src="/images/recipes/{{recipe.image}}.jpg" alt="{{recipe.title}}">
                         </a>
                         <div class="card-body">
                             <h5 class="card-title">
-                                <a href="http://{{recipe.permalink}}" target="_blank">{{recipe.title}}</a>
+                                <a href="{{recipe.getLink}}" target="_blank">{{recipe.title}}</a>
                             </h5>
                             <p class="card-text">
                                 von <a href="{{path('blog', {'blogSlug': recipe.blog.slug})}}">{{recipe.blog.title}}</a>

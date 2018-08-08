@@ -27,7 +27,7 @@ class AdminController extends Controller {
     }
 
     /**
-     * @Route("/admin/{sortColumn}/{order}", name="blogList")
+     * @Route("/admin/sort-by/{sortColumn}/{order}", name="blogList")
      */
     public function blogList($sortColumn = 'id', $order = 'asc') {
         $blogs = $this->em->getRepository(Blog::class)->findAll();
