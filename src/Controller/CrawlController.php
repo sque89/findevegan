@@ -31,6 +31,8 @@ class CrawlController extends AbstractController {
                     $existingRecipe->setImage($recipeDataForExistingRecipe->getImage());
                     $this->entityManager->flush();
                 }
+            } else if ($existingRecipe && $continueOnDuplicate && $skipExisting) {
+                continue;
             } else if (!$existingRecipe) {
                 $newRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                 $this->entityManager->persist($newRecipe);
