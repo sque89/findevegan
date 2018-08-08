@@ -21,17 +21,17 @@ class CrawlController extends AbstractController {
         $this->entityManager = $entityManager;
     }
 
-    private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $continueOnDuplicate, bool $skipExisting) {
+    private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $crawlAll, bool $skipExisting) {
         $recipeRepository = $this->entityManager->getRepository(Recipe::class);
         foreach ($recipeList as $recipeNode) {
             $existingRecipe = $recipeRepository->findOneByPermalink(CrawlService::parsePermalink(new Crawler($recipeNode)));
-            if ($existingRecipe && $continueOnDuplicate && !$skipExisting) {
+            if ($existingRecipe && $crawlAll && !$skipExisting) {
                 $recipeDataForExistingRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                 if ($recipeDataForExistingRecipe->getImage()) {
                     $existingRecipe->setImage($recipeDataForExistingRecipe->getImage());
                     $this->entityManager->flush();
                 }
-            } else if ($existingRecipe && $continueOnDuplicate && $skipExisting) {
+            } else if ($existingRecipe && $crawlAll && $skipExisting) {
                 continue;
             } else if (!$existingRecipe) {
                 $newRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);

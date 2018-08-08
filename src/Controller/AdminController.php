@@ -110,4 +110,23 @@ class AdminController extends Controller {
         ]);
     }
 
+    /**
+     * @Route("/admin/disable/{id}", name="blogDisable")
+     */
+    public function blogDisable($id) {
+        $blog = $this->em->getRepository(Blog::class)->findOneById($id);
+        $blog->setEnabled(false);
+        $this->em->flush();
+        return $this->redirectToRoute('blogList');
+    }
+
+    /**
+     * @Route("/admin/enable/{id}", name="blogEnable")
+     */
+    public function blogEnable($id) {
+        $blog = $this->em->getRepository(Blog::class)->findOneById($id);
+        $blog->setEnabled(true);
+        $this->em->flush();
+        return $this->redirectToRoute('blogList');
+    }
 }
