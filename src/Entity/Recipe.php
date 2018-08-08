@@ -106,6 +106,15 @@ class Recipe
         return $this->permalink;
     }
 
+    public function getLink() {
+        if(strncmp($this->blog->getUrl(), 'https', 5) === 0) {
+            echo "kj";
+            return 'https://www.' . $this->permalink;
+        } else {
+            return 'http://www.' . $this->permalink;
+        }
+    }
+
     public function setPermalink(string $permalink): self
     {
         $this->permalink = $permalink;

@@ -61,10 +61,10 @@
                         {{blog.blog.title}}
                     </td>
                     <td class="p-2 text-left">
-                        <a href="{{blog.blog.url}}" target="_blank">zum Blog</a>
+                        <a href="{{blog.blog.url}}" class="btn btn-primary" target="_blank">zum Blog</a>
                     </td>
                     <td class="p-2 text-left">
-                        <a href="{{blog.blog.feed}}" target="_blank">zum Feed</a>
+                        <a href="{{blog.blog.feed}}" class="btn btn-primary" target="_blank">zum Feed</a>
                     </td>
                     <td class="p-2 {{(blog.blog.getRecipes() | length) > 0 ? 'bg-success' : 'bg-danger'}}">
                         {{blog.blog.getRecipes() | length}}
