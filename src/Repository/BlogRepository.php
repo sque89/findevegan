@@ -23,7 +23,7 @@ class BlogRepository extends ServiceEntityRepository
     }
 
     public function findAll($sort = null, $order = null) {
-        $basicQuery = $this->getBasicQueryBuilder();
+        $basicQuery = $this->createQueryBuilder('b');
         if ($sort) {
             $basicQuery->orderBy('b.' . $sort, $order);
         }

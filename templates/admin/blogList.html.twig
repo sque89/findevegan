@@ -1,6 +1,20 @@
 {% extends '/admin/admin.html.twig' %}
+{% import _self as macros %}
 
 {% block main %}
+    <h1 class="cursor-pointer" data-toggle="collapse" href="#activeBlogs">Aktive Blogs</h1>
+    <div class="collapse show" id="activeBlogs">
+        {{ macros.blogTable(blogs, currentOrder, true) }}
+    </div>
+    <h1 class="cursor-pointer" data-toggle="collapse" href="#inactiveBlogs">Inaktive Blogs</h1>
+    <div class="collapse show" id="inactiveBlogs">
+        {{ macros.blogTable(blogs, currentOrder, false) }}
+    </div>
+{% endblock %}
+
+
+
+{% macro blogTable(blogs, currentOrder, activeStatus) %}
     <table class="table-striped text-center table-bordered">
         <thead>
             <tr>
@@ -46,13 +60,11 @@
                         Crawl erfolgreich
                     </a>
                 </th>
-                <th>
-                    Aktionen
-                </th>
+                <th colspan="2">Aktionen</th>
             </tr>
         </thead>
         <tbody>
-            {% for blog in blogs %}
+            {% for blog in blogs if blog.blog.enabled is same as(activeStatus) %}
                 <tr>
                     <td class="p-2 text-left">
                         {{blog.blog.id}}
@@ -87,8 +99,11 @@
                     <td class="p-2">
                         <a class="btn btn-primary" href="{{path('crawlSingle', {id: blog.blog.id})}}" target="_blank">Crawl</a>
                     </td>
+                    <td class="p-2">
+                        <a class="btn btn-primary" href="{{path(blog.blog.enabled ? 'blogDisable' : 'blogEnable', {id: blog.blog.id})}}">{{blog.blog.enabled ? 'Deaktivieren' : 'Aktivieren'}}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-{% endblock %}
+{% endmacro %}
