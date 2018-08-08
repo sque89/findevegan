@@ -21,11 +21,11 @@ class CrawlController extends AbstractController {
         $this->entityManager = $entityManager;
     }
 
-    private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $continueOnDuplicate) {
+    private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $continueOnDuplicate, bool $skipExisting) {
         $recipeRepository = $this->entityManager->getRepository(Recipe::class);
         foreach ($recipeList as $recipeNode) {
             $existingRecipe = $recipeRepository->findOneByPermalink(CrawlService::parsePermalink(new Crawler($recipeNode)));
-            if ($existingRecipe && $continueOnDuplicate === true) {
+            if ($existingRecipe && $continueOnDuplicate && !$skipExisting) {
                 $recipeDataForExistingRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                 if ($recipeDataForExistingRecipe->getImage()) {
                     $existingRecipe->setImage($recipeDataForExistingRecipe->getImage());
@@ -43,12 +43,12 @@ class CrawlController extends AbstractController {
         return true;
     }
 
-    private function crawlMultiPageFeed($blog, $pageParameter, $updateAllImages) {
+    private function crawlMultiPageFeed($blog, $pageParameter, $crawlAll, $skipExisting) {
         $currentPage = 1;
         try {
             $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
             while ($pageCrawler->filter('item')->count() > 0) {
-                if (!$this->crawlRecipeList($pageCrawler->filter('item'), $blog, $updateAllImages)) {
+                if (!$this->crawlRecipeList($pageCrawler->filter('item'), $blog, $crawlAll, $skipExisting)) {
                     break;
                 }
                 $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?' . $pageParameter . '=' . ++$currentPage));
@@ -60,7 +60,7 @@ class CrawlController extends AbstractController {
         }
     }
 
-    private function crawlSinglePageFeed($blog, $updateAllImages, $limitParameter = false) {
+    private function crawlSinglePageFeed($blog, $crawlAll, $skipExisting, $limitParameter = false) {
         try {
             $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . ($limitParameter != false ? "?" . $limitParameter : '')));
             $recipeItems = null;
@@ -75,7 +75,7 @@ class CrawlController extends AbstractController {
                 $recipeItems = $pageCrawler->filterXPath('//default:entry');
             }
 
-            $this->crawlRecipeList($recipeItems, $blog, $updateAllImages);
+            $this->crawlRecipeList($recipeItems, $blog, $crawlAll, $skipExisting);
             $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
             $this->entityManager->flush();
         } catch (\Exception $exception) {
@@ -83,7 +83,7 @@ class CrawlController extends AbstractController {
         }
     }
 
-    private function crawlCurlFeed($blog, $updateAllImages) {
+    private function crawlCurlFeed($blog, $crawlAll, $skipExisting) {
         try {
             $curl = curl_init();
             curl_setopt_array($curl, Array(
@@ -105,7 +105,7 @@ class CrawlController extends AbstractController {
                 $recipeItems = $pageCrawler->filterXPath('//default:entry');
             }
 
-            $this->crawlRecipeList($recipeItems, $blog, $updateAllImages);
+            $this->crawlRecipeList($recipeItems, $blog, $crawlAll, $skipExisting);
             $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
             $this->entityManager->flush();
         } catch (\Exception $exception) {
@@ -120,18 +120,19 @@ class CrawlController extends AbstractController {
     public function single(Request $request, $id) {
         set_time_limit(0);
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
-        $updateAllImages = $request->query->get("updateAllImages", false);
+        $crawlAll = $request->query->get("crawlAll", false);
+        $skipExisting = $request->query->get("skipExisting", true);
 
         if ($blog->getType() === "wordpress") {
-            $this->crawlMultiPageFeed($blog, 'paged', $updateAllImages);
+            $this->crawlMultiPageFeed($blog, 'paged', $crawlAll, $skipExisting);
         } else if ($blog->getType() === "blogspot") {
-            $this->crawlSinglePageFeed($blog, $updateAllImages, 'max-results=99999');
+            $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting, 'max-results=99999');
         } else if ($blog->getType() == "wix") {
             // TODO not implemented
         } else if ($blog->getType() == "weebly") {
-            $this->crawlSinglePageFeed($blog, $updateAllImages);
+            $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting);
         } else {
-            $this->crawlCurlFeed($blog, $updateAllImages);
+            $this->crawlCurlFeed($blog, $crawlAll, $skipExisting);
         }
 
         return $this->render('crawl/index.html.twig', [
