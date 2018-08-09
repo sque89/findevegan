@@ -56,6 +56,8 @@ class AdminController extends Controller {
             switch ($sortColumn) {
                 case 'id': return ($order === 'asc' ? 1 : -1) * ($a["blog"]->getId() - $b["blog"]->getId());
                     break;
+                case 'type': return ($order === 'asc' ? 1 : -1) * strcasecmp($a["blog"]->getType(), $b["blog"]->getType());
+                    break;
                 case 'title': return ($order === 'asc' ? 1 : -1) * strcasecmp($a["blog"]->getTitle(), $b["blog"]->getTitle());
                     break;
                 case 'recipeCount': return ($order === 'asc' ? 1 : -1) * (count($a["blog"]->getRecipes()) - count($b["blog"]->getRecipes()));

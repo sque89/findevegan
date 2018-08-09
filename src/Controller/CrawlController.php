@@ -15,10 +15,23 @@ class CrawlController extends AbstractController {
 
     private $crawlService;
     private $entityManager;
+    private $curlConnector;
 
     public function __construct(CrawlService $crawlService, EntityManagerInterface $entityManager) {
         $this->crawlService = $crawlService;
         $this->entityManager = $entityManager;
+        $this->curlConnector = curl_init();
+        curl_setopt_array($this->curlConnector, Array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => 'UTF-8',
+            CURLOPT_FOLLOWLOCATION => 1,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17'
+        ));
+    }
+
+    private function getFeedData($feedUrl) {
+        curl_setopt($this->curlConnector, CURLOPT_URL, $feedUrl);
+        return new Crawler(curl_exec($this->curlConnector));
     }
 
     private function crawlRecipeList(Crawler $recipeList, Blog $blog, bool $crawlAll, bool $skipExisting) {
@@ -48,7 +61,7 @@ class CrawlController extends AbstractController {
     private function crawlMultiPageFeed($blog, $pageParameter, $crawlAll, $skipExisting) {
         $currentPage = 1;
         try {
-            $pageCrawler = new Crawler(file_get_contents($blog->getFeed()));
+            $pageCrawler = $this->getFeedData($blog->getFeed());
             while ($pageCrawler->filter('item')->count() > 0) {
                 if (!$this->crawlRecipeList($pageCrawler->filter('item'), $blog, $crawlAll, $skipExisting)) {
                     break;
@@ -64,38 +77,8 @@ class CrawlController extends AbstractController {
 
     private function crawlSinglePageFeed($blog, $crawlAll, $skipExisting, $limitParameter = false) {
         try {
-            $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . ($limitParameter != false ? "?" . $limitParameter : '')));
+            $pageCrawler = $this->getFeedData($blog->getFeed() . ($limitParameter != false ? "?" . $limitParameter : ''));
             $recipeItems = null;
-
-            if ($pageCrawler->filterXPath('//item')->count() > 0) {
-                $recipeItems = $pageCrawler->filterXPath('//item');
-            } else if ($pageCrawler->filterXPath('//entry')->count() > 0) {
-                $recipeItems = $pageCrawler->filterXPath('//entry');
-            } else if ($pageCrawler->filterXPath('//default:item')->count() > 0) {
-                $recipeItems = $pageCrawler->filterXPath('//default:item');
-            } else if ($pageCrawler->filterXPath('//default:entry')->count() > 0) {
-                $recipeItems = $pageCrawler->filterXPath('//default:entry');
-            }
-
-            $this->crawlRecipeList($recipeItems, $blog, $crawlAll, $skipExisting);
-            $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
-            $this->entityManager->flush();
-        } catch (\Exception $exception) {
-            echo "crawlSingle: " . $exception->getMessage() . "<br />";
-        }
-    }
-
-    private function crawlCurlFeed($blog, $crawlAll, $skipExisting) {
-        try {
-            $curl = curl_init();
-            curl_setopt_array($curl, Array(
-                CURLOPT_URL => $blog->getFeed(),
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => 'UTF-8',
-                CURLOPT_FOLLOWLOCATION => 1,
-                CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.52 Safari/537.17'
-            ));
-            $pageCrawler = new Crawler(curl_exec($curl));
 
             if ($pageCrawler->filterXPath('//item')->count() > 0) {
                 $recipeItems = $pageCrawler->filterXPath('//item');
@@ -129,12 +112,8 @@ class CrawlController extends AbstractController {
             $this->crawlMultiPageFeed($blog, 'paged', $crawlAll, $skipExisting);
         } else if ($blog->getType() === "blogspot") {
             $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting, 'max-results=99999');
-        } else if ($blog->getType() == "wix") {
-            // TODO not implemented
-        } else if ($blog->getType() == "weebly") {
+        }  else {
             $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting);
-        } else {
-            $this->crawlCurlFeed($blog, $crawlAll, $skipExisting);
         }
 
         return $this->render('crawl/index.html.twig', [

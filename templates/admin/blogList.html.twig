@@ -24,6 +24,11 @@
                     </a>
                 </th>
                 <th class="p-2">
+                    <a href="{{path('blogList', {sortColumn: 'type', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
+                        Typ
+                    </a>
+                </th>
+                <th class="p-2">
                     <a href="{{path('blogList', {sortColumn: 'title', order: currentOrder is same as('desc') ? 'asc' : 'desc'})}}">
                         Blogname
                     </a>
@@ -68,6 +73,9 @@
                 <tr>
                     <td class="p-2 text-left">
                         {{blog.blog.id}}
+                    </td>
+                    <td class="p-2 text-left">
+                        {{blog.blog.type}}
                     </td>
                     <td class="p-2 text-left">
                         {{blog.blog.title}}
