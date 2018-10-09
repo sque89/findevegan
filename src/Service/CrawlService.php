@@ -175,8 +175,12 @@ class CrawlService {
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
         $recipe = new Recipe();
-        $imageData = $this->parseImage($recipeNode->text(), $recipeNode->filter("media|thumbnail")->each(function($element) { return $element->attr('url'); }));
-        $recipe->setTitle($this->parseTitle($recipeNode));
+        try {
+            $additionalImageUrls = $recipeNode->filter("media|thumbnail")->each(function($element) { return $element->attr('url'); });
+        } catch (\Exception $ex) {
+            $additionalImageUrls = [];
+        }
+        $imageData = $this->parseImage($recipeNode->text(), $additionalImageUrls);
         $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
