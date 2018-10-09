@@ -114,14 +114,6 @@ class RecipeRepository extends ServiceEntityRepository {
             $page);
     }
 
-    public function findOneByPermalink($permalink): ?Recipe {
-        return $this->getBasicQueryBuilder()
-            ->andWhere('r.permalink = :val')
-            ->setParameter('val', $permalink)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }
-
     public function findByBannedStatusIsPending() {
         return $this->getBasicQueryBuilder()
             ->where('r.banned = ' . Recipe::$BANNED_OPTIONS['BAN_PROPOSED'])

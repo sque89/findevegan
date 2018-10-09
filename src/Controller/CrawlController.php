@@ -38,6 +38,7 @@ class CrawlController extends AbstractController {
         $recipeRepository = $this->entityManager->getRepository(Recipe::class);
         foreach ($recipeList as $recipeNode) {
             $existingRecipe = $recipeRepository->findOneByPermalink(CrawlService::parsePermalink(new Crawler($recipeNode)));
+
             if ($existingRecipe && $crawlAll && !$skipExisting) {
                 $recipeDataForExistingRecipe = $this->crawlService->fetchRecipe(new Crawler($recipeNode), $blog);
                 if ($recipeDataForExistingRecipe->getImage()) {
@@ -105,8 +106,8 @@ class CrawlController extends AbstractController {
     public function single(Request $request, $id) {
         set_time_limit(0);
         $blog = $this->entityManager->getRepository(Blog::class)->find($id);
-        $crawlAll = $request->query->get("crawlAll", false);
-        $skipExisting = $request->query->get("skipExisting", true);
+        $crawlAll = $request->query->getBoolean("crawlAll", false);
+        $skipExisting = $request->query->getBoolean("skipExisting", true);
 
         if ($blog->getType() === "wordpress") {
             $this->crawlMultiPageFeed($blog, 'paged', $crawlAll, $skipExisting);

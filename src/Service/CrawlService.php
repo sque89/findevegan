@@ -86,12 +86,13 @@ class CrawlService {
         $image->toFile($thumbImagePath, "image/jpeg", 80);
     }
 
-    private function parseImage(string $nodeContent) {
+    private function parseImage(string $nodeContent, $additionalImageUrls = []) {
         $matches = [];
         preg_match_all($this->IMAGE_PATTERN, $nodeContent, $matches);
+        $imageUrls = array_merge($matches[0], $additionalImageUrls);
         $imageDataToReturn = array("name" => null, "hasFace" => false, "image" => null);
 
-        foreach ($matches[0] as $match) {
+        foreach ($imageUrls as $match) {
             if (!$this->pathIsInvalidBecauseOfPathSegment($match)) {
                 try {
                     $imageDataToReturn = $this->checkAndCreateImage($match);
@@ -174,7 +175,7 @@ class CrawlService {
 
     public function fetchRecipe(Crawler $recipeNode, Blog $blog) {
         $recipe = new Recipe();
-        $imageData = $this->parseImage($recipeNode->text());
+        $imageData = $this->parseImage($recipeNode->text(), $recipeNode->filter("media|thumbnail")->each(function($element) { return $element->attr('url'); }));
         $recipe->setTitle($this->parseTitle($recipeNode));
         $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
