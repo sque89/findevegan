@@ -72,7 +72,7 @@ class CrawlService {
         $image = new SimpleImage($path);
         //TODO 300 oder 400?
         if ($image->getWidth() >= 300) {
-            @$returnValue["hasFace"] = $this->faceDetector->faceDetect($image->toString('image/jpeg'));
+            //@$returnValue["hasFace"] = $this->faceDetector->faceDetect($image->toString('image/jpeg'));
             $returnValue["image"] = $image;
             return $returnValue;
         } else {
