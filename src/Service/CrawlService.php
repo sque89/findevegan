@@ -181,6 +181,7 @@ class CrawlService {
             $additionalImageUrls = [];
         }
         $imageData = $this->parseImage($recipeNode->text(), $additionalImageUrls);
+        $recipe->setTitle($this->parseTitle($recipeNode));
         $recipe->setPermalink($this->parsePermalink($recipeNode));
         $recipe->setReleased($this->parseReleaseDate($recipeNode));
         $recipe->setCategories($this->parseRecipeCategories($recipeNode->filter('category')));
