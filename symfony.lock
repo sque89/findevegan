@@ -1,4 +1,7 @@
 {
+    "beberlei/doctrineextensions": {
+        "version": "v1.2.0"
+    },
     "claviska/simpleimage": {
         "version": "3.3.3"
     },
