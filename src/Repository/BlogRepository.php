@@ -33,7 +33,7 @@ class BlogRepository extends ServiceEntityRepository
     public function findRange($from, $to) {
         $qb = $this->getBasicQueryBuilder();
         return $qb->where('b.id >= ' . $from)
-            ->where('b.id <= ' . $to)
+            ->andWhere('b.id <= ' . $to)
             ->orderBy('RAND()')
             ->getQuery()
             ->getResult();
