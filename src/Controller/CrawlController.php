@@ -122,4 +122,29 @@ class CrawlController extends AbstractController {
         ]);
     }
 
+    /**
+     * @param updateAllImages - wenn gesetzt wird nach bereits vorhandenem Rezept nicht gestoppt und die Bilder aller Rezepte aktualisiert
+     * @Route("/crawl/{fromId}/{toId}", name="crawlRange")
+     */
+    public function range(Request $request, $fromId, $toId) {
+        set_time_limit(0);
+        $blogs = $this->entityManager->getRepository(Blog::class)->findRange($fromId, $toId);
+        $crawlAll = $request->query->getBoolean("crawlAll", false);
+        $skipExisting = $request->query->getBoolean("skipExisting", true);
+
+        foreach($blogs as $blog) {
+            if ($blog->getType() === "wordpress") {
+                $this->crawlMultiPageFeed($blog, 'paged', $crawlAll, $skipExisting);
+            } else if ($blog->getType() === "blogspot") {
+                $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting, 'max-results=99999');
+            }  else {
+                $this->crawlSinglePageFeed($blog, $crawlAll, $skipExisting);
+            }
+        }
+
+        return $this->render('crawl/index.html.twig', [
+                    'controller_name' => 'CrawlController',
+        ]);
+    }
+
 }

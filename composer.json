@@ -7,6 +7,7 @@
     "require": {
         "php": "^7.2.1",
         "ext-iconv": "*",
+        "beberlei/DoctrineExtensions": "^1.2",
         "claviska/simpleimage": "^3.3",
         "mauricesvay/php-facedetection": "^0.1.0",
         "sensio/framework-extra-bundle": "^5.1",

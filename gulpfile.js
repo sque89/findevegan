@@ -25,4 +25,4 @@ gulp.task('copyIconFont', function() {
         .pipe(gulp.dest('./public/fonts'));
 });
 
-gulp.task('default', ['copyImages', 'copyFavIcon', 'copyIconFont', 'copyBootstrapJs', 'copyJquery']);
+gulp.task('default', gulp.series('copyImages', 'copyFavIcon', 'copyIconFont', 'copyBootstrapJs', 'copyJquery'));

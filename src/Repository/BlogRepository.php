@@ -30,6 +30,15 @@ class BlogRepository extends ServiceEntityRepository
         return $basicQuery->getQuery()->getResult();
     }
 
+    public function findRange($from, $to) {
+        $qb = $this->getBasicQueryBuilder();
+        return $qb->where('b.id >= ' . $from)
+            ->where('b.id <= ' . $to)
+            ->orderBy('RAND()')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findBlogsByFirstLetter(string $letter) {
         $qb = $this->getBasicQueryBuilder();
         return $qb->add('where', $qb->expr()->eq($qb->expr()->lower($qb->expr()->substring('b.title', 1, 1)), ':letter'))
