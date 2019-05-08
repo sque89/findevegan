@@ -67,7 +67,12 @@ class CrawlController extends AbstractController {
                 if (!$this->crawlRecipeList($pageCrawler->filter('item'), $blog, $crawlAll, $skipExisting)) {
                     break;
                 }
-                $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?' . $pageParameter . '=' . ++$currentPage));
+
+                if (parse_url($blog->getFeed(), PHP_URL_QUERY)) {
+                    $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '&' . $pageParameter . '=' . ++$currentPage));
+                } else {
+                    $pageCrawler = new Crawler(file_get_contents($blog->getFeed() . '?' . $pageParameter . '=' . ++$currentPage));
+                }
             }
             $blog->setLatestSuccessfulCrawl(new \DateTimeImmutable());
             $this->entityManager->flush();
