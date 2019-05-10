@@ -180,6 +180,13 @@ class CrawlService {
         } catch (\Exception $ex) {
             $additionalImageUrls = [];
         }
+
+        try {
+            $additionalImageUrls = $recipeNode->filter("media|content")->each(function($element) { return $element->attr('url'); });
+        } catch (\Exception $ex) {
+            $additionalImageUrls = [];
+        }
+
         $imageData = $this->parseImage($recipeNode->text(), $additionalImageUrls);
         $recipe->setTitle($this->parseTitle($recipeNode));
         $recipe->setPermalink($this->parsePermalink($recipeNode));
