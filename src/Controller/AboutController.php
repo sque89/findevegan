@@ -3,9 +3,9 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class AboutController extends Controller {
+class AboutController extends AbstractController {
 
     /**
      * @Route("/ueber", name="about")

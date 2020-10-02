@@ -4,8 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
 /**
@@ -32,7 +32,7 @@ class RecipeRepository extends ServiceEntityRepository {
     }
 
     private function getPaginator($queryBuilder, $currentPage) {
-        $adapter = new DoctrineORMAdapter($queryBuilder);
+        $adapter = new QueryAdapter($queryBuilder);
         $paginator = new Pagerfanta($adapter);
         $paginator->setMaxPerPage(40);
         $paginator->setCurrentPage($currentPage);
