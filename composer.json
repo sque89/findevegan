@@ -2,12 +2,12 @@
     "type": "project",
     "license": "proprietary",
     "platform": {
-        "php": "7.2.1"
+        "php": "7.4"
     },
     "require": {
-        "php": "^7.2.1",
+        "php": "^7.4",
         "ext-iconv": "*",
-        "beberlei/DoctrineExtensions": "^1.2",
+        "beberlei/doctrineextensions": "^1.2",
         "claviska/simpleimage": "^3.3",
         "mauricesvay/php-facedetection": "^0.1.0",
         "sensio/framework-extra-bundle": "^5.1",
@@ -35,7 +35,7 @@
         "white-october/pagerfanta-bundle": "^1.1"
     },
     "require-dev": {
-        "sensiolabs/security-checker": "^4.1",
+        "sensiolabs/security-checker": "^5.0",
         "symfony/browser-kit": "^4.0",
         "symfony/css-selector": "^4.0",
         "symfony/debug-pack": "*",

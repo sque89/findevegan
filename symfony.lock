@@ -104,6 +104,9 @@
     "pagerfanta/pagerfanta": {
         "version": "v1.0.5"
     },
+    "php": {
+        "version": "7.4"
+    },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
     },
