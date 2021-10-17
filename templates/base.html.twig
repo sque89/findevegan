@@ -100,14 +100,6 @@
                     <h4 class="mt-3">Aktivste Blogs</h4>
                     {{ render(controller('App\\Controller\\BlogController::ranking')) }}
                 </div>
-                <div class ="text-center">
-                    <h4 class="mt-3">Vegan Kochbuch</h4>
-                    Kochbuch mit vielen leckeren und schnell zubereiteten Rezepten. Ideal für Vielbeschäftigte Menschen. Nur noch heute kostenlos, ab dann 2,99€.
-                    Schaut mal rein!
-                    <a target="_blank" href="https://l.facebook.com/l.php?u=https%3A%2F%2Fwww.amazon.de%2Fdp%2FB07PRDPV8M%3Ffbclid%3DIwAR38Co-VvnmcHhnqKdDmFbW575Ld8ns_esBc3jRO-g0V6ol9FRZp-0Y2VWM&h=AT3QAw_ZvbtEPmosH_fnIiEDkTra8akVfZ2sKrSPgqWzmQOb6aBYOcqots_LeTD6z0PkgSZKDWbEYvPdB4HbiUPa72k3bnDCanhGLL-p8nrHo98ozHzR_QLYnIfH">
-                        <img src="/images/misc/kochbuch_vegan.jpg" class="w-100" />
-                    </a>
-                </div>
                 <div class ="termcloud text-center">
                     <h4 class="mt-3">Meist gefunden</h4>
                     {{ render(controller('App\\Controller\\RecipeController::termCloud')) }}

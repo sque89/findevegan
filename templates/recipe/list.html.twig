@@ -85,7 +85,7 @@
                             {% endif %}
                         </div>
                         <div class="card-footer d-flex justify-content-between">
-                            <small class="text-muted">veröffentlicht am {{recipe.released|date("d.m.Y")}}</small>
+                            <small class="text-muted">veröffentlicht am&nbsp;{{recipe.released|date("d.m.Y")}}</small>
                             <a href="{{path('reportRecipe', {'recipeId': recipe.id})}}" title="Rezept melden">
                                 <span class="oi oi-bolt report-recipe"></span>
                             </a>

@@ -19,20 +19,26 @@ class BlogRepository extends ServiceEntityRepository
 
     private function getBasicQueryBuilder() {
         return $this->createQueryBuilder('b')
-                ->where('b.enabled = 1');
+            ->join('b.recipes', 'r')
+            ->where('b.enabled = 1')
+            ->andWhere('r.image IS NOT NULL')
+            ->groupBy('b.id')
+            ->having('count(r.id) > 0');
     }
 
     public function findAll($sort = null, $order = null) {
-        $basicQuery = $this->createQueryBuilder('b');
+        $basicQuery = $this->getBasicQueryBuilder();
+
         if ($sort) {
             $basicQuery->orderBy('b.' . $sort, $order);
         }
+
         return $basicQuery->getQuery()->getResult();
     }
 
     public function findRange($from, $to) {
-        $qb = $this->getBasicQueryBuilder();
-        return $qb->where('b.id >= ' . $from)
+        return $this->getBasicQueryBuilder()
+            ->andWhere('b.id >= ' . $from)
             ->andWhere('b.id <= ' . $to)
             ->orderBy('RAND()')
             ->getQuery()
@@ -40,8 +46,10 @@ class BlogRepository extends ServiceEntityRepository
     }
 
     public function findBlogsByFirstLetter(string $letter) {
-        $qb = $this->getBasicQueryBuilder();
-        return $qb->add('where', $qb->expr()->eq($qb->expr()->lower($qb->expr()->substring('b.title', 1, 1)), ':letter'))
+        $basicQuery = $this->getBasicQueryBuilder();
+
+        return $this->getBasicQueryBuilder()
+            ->andWhere($basicQuery->expr()->eq($basicQuery->expr()->lower($basicQuery->expr()->substring('b.title', 1, 1)), ':letter'))
             ->setParameter('letter', $letter)
             ->orderBy('b.title')
             ->getQuery()
@@ -49,19 +57,17 @@ class BlogRepository extends ServiceEntityRepository
     }
 
     public function findNumberOfBlogs() {
-        return $this->getBasicQueryBuilder()
-            ->select('count(b.id)')
-            ->where('b.enabled = true')
+        $blogs = $this->getBasicQueryBuilder()
             ->getQuery()
-            ->getSingleScalarResult();
+            ->getArrayResult();
+
+        return count($blogs);
     }
 
     public function findMostActiveBlogs() {
         return $this->getBasicQueryBuilder()
-            ->join('b.recipes', 'r')
             ->select('count(r.id) as count, b.title, b.slug')
-            ->where('DATE_DIFF(CURRENT_TIMESTAMP(), r.released) < 30')
-            ->groupBy('b.id')
+            ->andWhere('DATE_DIFF(CURRENT_TIMESTAMP(), r.released) < 30')
             ->orderBy('count', 'DESC')
             ->setMaxResults(10)
             ->getQuery()
@@ -71,10 +77,9 @@ class BlogRepository extends ServiceEntityRepository
     public function findUsedCategoriesByBlogId($blogId) {
         return $this->getBasicQueryBuilder()
             ->select('c.title, c.slug')
-            ->join('b.recipes', 'r')
             ->join('r.categories', 'c')
             ->distinct('c.id')
-            ->where('b.id = :blogId')
+            ->andWhere('b.id = :blogId')
             ->setParameter('blogId', $blogId)
             ->getQuery()
             ->getResult();

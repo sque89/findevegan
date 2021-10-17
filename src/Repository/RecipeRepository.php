@@ -132,8 +132,12 @@ class RecipeRepository extends ServiceEntityRepository {
             $queryBuilder->setParameter('blogSlug', $blogSlug);
         }
         if ($term) {
-            $queryBuilder->andWhere('r.title LIKE :term');
-            $queryBuilder->setParameter('term', '%' . $term. '%');
+            $terms = explode('+', $term);
+
+            foreach ($terms as $key => $term) {
+                $queryBuilder->andWhere('r.title LIKE :term' . $key);
+                $queryBuilder->setParameter('term' . $key, '%' . $term. '%');
+            }
         }
         return $this->getPaginator($queryBuilder, $page);
     }

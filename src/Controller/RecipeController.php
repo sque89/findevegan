@@ -24,7 +24,8 @@ class RecipeController extends Controller {
     }
 
     private function handleUglyTerm($term, $routeToRedirect, $routeParameters = []) {
-        if ($term && preg_match("/^[0-9a-zöüäßÖÜÄ\+]+$/i", $term)) {
+        if ($term && preg_match("/^[0-9a-zöüäßÖÜÄ\+ ]+$/i", $term)) {
+            $term = preg_replace('/\s+/', '+', $term);
             $routeParameters["term"] = $term;
             return $this->redirectToRoute($routeToRedirect, $routeParameters, 301);
         }
@@ -128,7 +129,7 @@ class RecipeController extends Controller {
         return $this->handleUglyTerm($request->query->get("q"), 'latestWithTerm') ??
                 $this->render('recipe/list.html.twig', [
                     'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), null, null, $term),
-                    'term' => $term,
+                    'term' => str_replace('+', ' ', $term),
                     'searchPlaceholder' => 'Suche in allen Rezepten',
                     'categories' => $this->getCategoryList('category'),
                     'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), null, null, $term)
@@ -156,7 +157,7 @@ class RecipeController extends Controller {
         return $response ??
                 $this->render('recipe/list.html.twig', [
                     'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, $blogSlug, $term),
-                    'term' => $term,
+                    'term' => str_replace('+', ' ', $term),
                     'searchPlaceholder' => "blub",
                     'categories' => $this->getCategoryList('blogWithCategory', array('blogSlug' => $blog->getSlug())),
                     'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, $blog, $term)
@@ -174,7 +175,7 @@ class RecipeController extends Controller {
         return $this->handleUglyTerm($request->query->get("q"), 'categoryWithTerm', array("categorySlug" => $categorySlug)) ??
                 $this->render('recipe/list.html.twig', [
                     'recipes' => $this->em->getRepository(Recipe::class)->findRecipeListForCriterias($request->query->get("page", 1), $categorySlug, null, $term),
-                    'term' => $term,
+                    'term' => str_replace('+', ' ', $term),
                     'searchPlaceholder' => "blub",
                     'categories' => $this->getCategoryList('category'),
                     'pageTextElements' => $this->getPageTextElements($request->query->get("page", 1), $category, null, $term)
