@@ -2,12 +2,12 @@
     "type": "project",
     "license": "proprietary",
     "platform": {
-        "php": "7.2.1"
+        "php": "8.1.0"
     },
     "require": {
-        "php": "^7.2.1",
+        "php": "^8.1.0",
         "ext-iconv": "*",
-        "beberlei/DoctrineExtensions": "^1.2",
+        "beberlei/doctrineextensions": "^1.2",
         "claviska/simpleimage": "^3.3",
         "mauricesvay/php-facedetection": "^0.1.0",
         "sensio/framework-extra-bundle": "^5.1",
