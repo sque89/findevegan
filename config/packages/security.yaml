@@ -1,10 +1,13 @@
 security:
+    password_hashers:
+        "Symfony\\Component\\Security\\Core\\User\\InMemoryUser":
+            algorithm: bcrypt
     providers:
         in_memory:
             memory:
                 users:
                     admin:
-                        password: "12345"
+                        password: "$2a$12$2IzOWygpqAUe1oPLMIIzPOQHHUuUL9gPLzsck9pKYvtsWj.C0Gzrq"
                         roles: 'ROLE_ADMIN'
     firewalls:
         dev:
