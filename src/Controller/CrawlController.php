@@ -4,11 +4,11 @@ namespace App\Controller;
 
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Blog;
 use App\Entity\Recipe;
 use App\Service\CrawlService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 
 class CrawlController extends AbstractController {

@@ -3,12 +3,12 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use App\Entity\Recipe;
 use App\Entity\Blog;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class AdminController extends Controller {
+class AdminController extends AbstractController {
 
     private $em;
 

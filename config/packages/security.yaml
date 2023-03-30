@@ -1,0 +1,17 @@
+security:
+    providers:
+        in_memory:
+            memory:
+                users:
+                    admin:
+                        password: "12345"
+                        roles: 'ROLE_ADMIN'
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            http_basic: ~
+    access_control:
+        - { path: ^/crawl, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }

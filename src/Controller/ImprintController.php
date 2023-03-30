@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class ImprintController extends Controller
-{
+class ImprintController extends AbstractController {
     /**
      * @Route("/impressum", name="imprint")
      */

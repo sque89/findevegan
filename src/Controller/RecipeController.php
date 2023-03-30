@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Recipe;
 use App\Entity\RecipeCategory;
@@ -12,8 +11,9 @@ use App\Entity\Searchterm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Form\ReportRecipeType;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class RecipeController extends Controller {
+class RecipeController extends AbstractController {
 
     private $em;
     private $router;

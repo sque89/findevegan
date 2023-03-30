@@ -4,9 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Symfony\Bridge\Doctrine\RegistryInterface;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Pagerfanta;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 
 /**
  * @method Recipe|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +16,7 @@ use Pagerfanta\Pagerfanta;
  */
 class RecipeRepository extends ServiceEntityRepository {
 
-    public function __construct(RegistryInterface $registry) {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Recipe::class);
     }
 
@@ -32,7 +32,7 @@ class RecipeRepository extends ServiceEntityRepository {
     }
 
     private function getPaginator($queryBuilder, $currentPage) {
-        $adapter = new DoctrineORMAdapter($queryBuilder);
+        $adapter = new QueryAdapter($queryBuilder);
         $paginator = new Pagerfanta($adapter);
         $paginator->setMaxPerPage(40);
         $paginator->setCurrentPage($currentPage);

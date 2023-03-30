@@ -2,11 +2,10 @@
 
 namespace App\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class DataProtectionController extends Controller
-{
+class DataProtectionController extends AbstractController {
     /**
      * @Route("/datenschutz", name="data_protection")
      */

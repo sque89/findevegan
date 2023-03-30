@@ -1,6 +1,8 @@
 ###> symfony/framework-bundle ###
-/.env
-/public/usage
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /public/css/
 /public/fonts/
@@ -9,10 +11,7 @@
 /public/favicon.ico
 /public/auto-deploy/config.php
 /public/auto-deploy/deploy.log
-
 /var/
-/config/packages/security.yaml
-/src/Migrations/
 /vendor/
 ###< symfony/framework-bundle ###
 
@@ -30,3 +29,9 @@
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 /nbproject/
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###

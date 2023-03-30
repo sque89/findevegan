@@ -3,12 +3,11 @@
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Book;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class BookController extends Controller
-{
+class BookController extends AbstractController {
     private $em;
 
     public function __construct(EntityManagerInterface $entitiyManager) {
