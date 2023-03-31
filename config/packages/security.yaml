@@ -7,7 +7,7 @@ security:
             memory:
                 users:
                     admin:
-                        password: "$2a$12$2IzOWygpqAUe1oPLMIIzPOQHHUuUL9gPLzsck9pKYvtsWj.C0Gzrq"
+                        password: "$2a$12$URRfrXpozyleravK09Rq4.g8qN5Oxzlsq60vx9W.CudUXwNa0ch.q"
                         roles: 'ROLE_ADMIN'
     firewalls:
         dev:
